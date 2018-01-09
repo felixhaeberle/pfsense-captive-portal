@@ -14,5 +14,6 @@ This separations is provided and needed by pfsense backend, anyone who is famili
 The main plus point of this solutions is the look and feel of the login screen based on a **google material** thinking.
 Both background image and logo SVG can be changed as everything of the code.
 
-![screen-tablet](https://github.com/felixhaeberle/pfsense-captive-portal/blob/master/screens/screen-tablet.jpg)
+
 ![screen-desktop](https://github.com/felixhaeberle/pfsense-captive-portal/blob/master/screens/screen-desktop.jpg)
+![screen-tablet](https://github.com/felixhaeberle/pfsense-captive-portal/blob/master/screens/screen-tablet.jpg)
