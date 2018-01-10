@@ -2,6 +2,12 @@
 Awesome pfsense login pages template for your captive portal!
 
 Supports **latest version** of [pfsense 2.4.2](https://www.pfsense.org/download/).
+The portal pages are using `$PORTAL_ACTION$` and `$PORTAL_REDIRURL$` to get data from the firewall backend.
+Authentication requests are send with `POST` requests to the firewall.
+
+The login sites are based on **google material** thinking, **full responsive** and **supports all modern browsers**.
+
+![browser support svg](https://github.com/felixhaeberle/pfsense-captive-portal/blob/master/screens/support.svg)
 
 All pages have User/Password input written in HTML5 and inline css (in the `head` tag):
 
@@ -15,5 +21,4 @@ The main plus point of this solutions is the look and feel of the login screen b
 Both background image and logo SVG can be changed as everything of the code.
 
 
-![screen-desktop](https://github.com/felixhaeberle/pfsense-captive-portal/blob/master/screens/screen-desktop.jpg)
-![screen-tablet](https://github.com/felixhaeberle/pfsense-captive-portal/blob/master/screens/screen-tablet.jpg)
+![screenshot image of desktop](https://github.com/felixhaeberle/pfsense-captive-portal/blob/master/screens/screen-desktop.jpg)
