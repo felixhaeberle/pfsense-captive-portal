@@ -80,7 +80,6 @@ input[type=password] {
   background: #fff;
   border: 1px solid #d9d9d9;
   border-top: 1px solid #c0c0c0;
-  /* border-radius: 2px; */
   padding: 0 8px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -103,9 +102,6 @@ input[type=password]:hover {
   font-weight: 700;
   height: 36px;
   padding: 0 8px;
-  /* border-radius: 3px; */
-  /* -webkit-user-select: none;
-  user-select: none; */
 }
 
 .login-submit {
@@ -116,7 +112,6 @@ input[type=password]:hover {
   color: #fff;
   text-shadow: 0 1px rgba(0, 0, 0, 0.1);
   background-color: #4d90fe;
-  /* background-image: -webkit-gradient(linear, 0 0, 0 100%,   from(#4d90fe), to(#4787ed)); */
 }
 
 .login-submit:disabled {
@@ -128,7 +123,6 @@ input[type=password]:hover {
   border: 0px;
   text-shadow: 0 1px rgba(0, 0, 0, 0.3);
   background-color: #357ae8;
-  /* background-image: -webkit-gradient(linear, 0 0, 0 100%,   from(#4d90fe), to(#357ae8)); */
 }
 
 .login-help {
@@ -170,9 +164,7 @@ input[type=checkbox] {
   float: left;
 }
 
-
-
-
+/* Media Query */
 @media screen and (max-width: 450px) {
   .login-card {
     width: 70% !important;
