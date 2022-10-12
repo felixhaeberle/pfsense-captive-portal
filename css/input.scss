@@ -1,0 +1,220 @@
+@import url('https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap');
+/* Base */
+/* Content */
+/* Login Card */
+/* Login */
+/* Checkbox */
+/* Media Query */
+
+
+$tit-font-family: 'Titillium Web', sans-serif;;
+$Serif-font-family: 'IBM Plex Serif', monospace;;
+$Mono-font-family: 'IBM Plex Mono', monospace;
+
+html {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	display: table;
+body {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+	display: table;
+	box-sizing: border-box;
+
+}
+#content {
+	font-family: $tit-font-family;
+	background: url(../mirahi-pattern.svg) no-repeat center center fixed;
+	-webkit-background-size: cover;
+	-moz-background-size: cover;
+	-o-background-size: cover;
+	background-size: cover;
+	display: table-cell;
+	vertical-align: middle;
+}
+.login-card {
+	padding: 40px;
+	width: 405px;
+	background: #FAFAFA;
+	margin: 0 auto 0px;
+	border: 1px solid #4C70FF;
+	border-radius: 16px;
+	box-shadow: 4px 4px 0px #4C70FF;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	
+	form{
+		width: 100%;
+	}
+	a {
+		text-decoration: none;
+		color: #666;
+		font-weight: 400;
+		text-align: center;
+		display: inline-block;
+		opacity: 0.6;
+		transition: opacity ease 0.5s;
+		&:hover {
+			opacity: 1;
+		}
+	}
+	img {
+		width: 28%;
+		height: 28%;
+	}
+	h1 {
+		font-family: $tit-font-family;
+		font-weight: 400;
+		text-align: center;
+		font-size: 2.3em;
+		color: #1383c6;
+		span {
+			color: #f26721;
+		}
+	}
+	input[type=submit] {
+		width: 100%;
+		display: block;
+		margin-bottom: 40px;
+		position: relative;
+	}
+	input[type=text] {
+		height: 44px;
+		font-size: 16px;
+		width: 100%;
+		-webkit-appearance: none;
+		border: 1.6px solid #4C70FF;
+		border-radius: 4px;
+		padding: 0 8px;
+		box-sizing: border-box;
+		-moz-box-sizing: border-box;
+		&:active {
+			border: 1.6px solid #4C70FF;
+			border-radius: 4px;
+			-moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+			-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+			box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+		}
+	}
+}
+input[type=password] {
+	height: 44px;
+	font-family: $Serif-font-family;
+	font-size: 16px;
+	width: 100%;
+	margin-bottom: 40px;
+	-webkit-appearance: none;
+	background: #fff;
+	border: 1.6px solid #4C70FF;
+	border-radius: 4px;
+	padding: 0 8px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	&:active {
+		border: 1.6px solid #4C70FF;
+		border-radius: 4px;
+		-moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+		-webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+		box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+	}
+}
+.login {
+	text-align: center;
+	font-size: 14px;
+	font-family: $Mono-font-family;
+	font-weight: 700;
+	height: 36px;
+	padding: 0 8px;
+}
+.login-submit {
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	color: #4C70FF;
+	background: #FAFAFA;
+	border: 1.6px solid #4C70FF;
+	box-shadow: 8px 8px 0px #4C70FF;
+	border-radius: 4px;
+	height: 55px;
+	&:hover {
+		background: #FAFAFA;
+		border: 1.6px solid #0033FF;
+		box-shadow: 4px 4px 0px #0033FF;
+		border-radius: 4px;
+		cursor: pointer;
+	}
+	&:disabled {
+		background: #FAFAFA;
+		border: 1.6px solid #9AA2B2;
+		border-radius: 4px;	
+		box-shadow: none;
+		color: #9AA2B2;
+		cursor: default;
+	}
+
+}
+.login-help {
+	width: 100%;
+	text-align: center;
+	font-size: 12px;
+}
+.list {
+	list-style-type: none;
+	padding: 0;
+}
+.list__item {
+	margin: 0 0 .7rem 0;
+	padding: 0;
+}
+label {
+	display: -webkit-box;
+	display: -webkit-flex;
+	display: -ms-flexbox;
+	display: flex;
+	-webkit-box-align: center;
+	-webkit-align-items: center;
+	-ms-flex-align: center;
+	align-items: center;
+	text-align: left;
+	font-family: $tit-font-family;
+}
+.label-user, .label-password {
+	padding-bottom: 8px;
+}
+.input-user{
+	margin-bottom: 40px;
+}
+input[type=radio] {
+	-webkit-box-flex: 0;
+	-webkit-flex: none;
+	-ms-flex: none;
+	flex: none;
+	margin-right: 10px;
+	float: left;
+}
+input[type=checkbox] {
+	-webkit-box-flex: 0;
+	-webkit-flex: none;
+	-ms-flex: none;
+	flex: none;
+	margin-right: 10px;
+	float: left;
+	cursor: pointer;
+}
+@media screen and (max-width: 450px) {
+	.login-card {
+		width: 70% !important;
+		img {
+			width: 30%;
+			height: 30%;
+		}
+	}
+}
+}

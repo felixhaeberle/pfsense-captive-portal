@@ -1,39 +1,53 @@
+@import url("https://fonts.googleapis.com/css2?family=Titillium+Web&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Serif&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono&display=swap");
 /* Base */
-html,
-body {
+/* Content */
+/* Login Card */
+/* Login */
+/* Checkbox */
+/* Media Query */
+html {
   margin: 0;
   padding: 0;
   width: 100%;
   height: 100%;
   display: table;
 }
-
-/* Content */
-#content {
-  font-family: 'Source Sans Pro', sans-serif;
-  background: url(pleasechangethis.jpg) no-repeat center center fixed;
+html body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  display: table;
+  box-sizing: border-box;
+}
+html #content {
+  font-family: "Titillium Web", sans-serif;
+  background: url(../mirahi-pattern.svg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
   display: table-cell;
-  text-align: center;
   vertical-align: middle;
 }
-
-
-/* Login Card */
-.login-card {
+html .login-card {
   padding: 40px;
-  width: 274px;
-  background-color: #F7F7F7;
-  margin: 0 auto 10px;
-  border-radius: 2px;
-  box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
-  overflow: hidden;
+  width: 405px;
+  background: #FAFAFA;
+  margin: 0 auto 0px;
+  border: 1px solid #4C70FF;
+  border-radius: 16px;
+  box-shadow: 4px 4px 0px #4C70FF;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
-.login-card a {
+html .login-card form {
+  width: 100%;
+}
+html .login-card a {
   text-decoration: none;
   color: #666;
   font-weight: 400;
@@ -42,107 +56,116 @@ body {
   opacity: 0.6;
   transition: opacity ease 0.5s;
 }
-
-.login-card a:hover {
+html .login-card a:hover {
   opacity: 1;
 }
-
-.login-card h1 {
+html .login-card img {
+  width: 28%;
+  height: 28%;
+}
+html .login-card h1 {
+  font-family: "Titillium Web", sans-serif;
   font-weight: 400;
   text-align: center;
   font-size: 2.3em;
   color: #1383c6;
 }
-
-.login-card h1 span {
+html .login-card h1 span {
   color: #f26721;
 }
-
-.login-card img {
-  width: 28%;
-  height: 28%;
-}
-
-.login-card input[type=submit] {
+html .login-card input[type=submit] {
   width: 100%;
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 40px;
   position: relative;
 }
-
-.login-card input[type=text],
-input[type=password] {
+html .login-card input[type=text] {
   height: 44px;
   font-size: 16px;
   width: 100%;
-  margin-bottom: 10px;
   -webkit-appearance: none;
-  background: #fff;
-  border: 1px solid #d9d9d9;
-  border-top: 1px solid #c0c0c0;
+  border: 1.6px solid #4C70FF;
+  border-radius: 4px;
   padding: 0 8px;
   box-sizing: border-box;
   -moz-box-sizing: border-box;
 }
-
-.login-card input[type=text]:hover,
-input[type=password]:hover {
-  border: 1px solid #b9b9b9;
-  border-top: 1px solid #a0a0a0;
+html .login-card input[type=text]:active {
+  border: 1.6px solid #4C70FF;
+  border-radius: 4px;
   -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
   -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
-
-/* Login */
-.login {
+html input[type=password] {
+  height: 44px;
+  font-family: "IBM Plex Serif", monospace;
+  font-size: 16px;
+  width: 100%;
+  margin-bottom: 40px;
+  -webkit-appearance: none;
+  background: #fff;
+  border: 1.6px solid #4C70FF;
+  border-radius: 4px;
+  padding: 0 8px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+}
+html input[type=password]:active {
+  border: 1.6px solid #4C70FF;
+  border-radius: 4px;
+  -moz-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+html .login {
   text-align: center;
   font-size: 14px;
-  font-family: 'Arial', sans-serif;
+  font-family: "IBM Plex Mono", monospace;
   font-weight: 700;
   height: 36px;
   padding: 0 8px;
 }
-
-.login-submit {
+html .login-submit {
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
-  border: 0px;
-  color: #fff;
-  text-shadow: 0 1px rgba(0, 0, 0, 0.1);
-  background-color: #4d90fe;
+  color: #4C70FF;
+  background: #FAFAFA;
+  border: 1.6px solid #4C70FF;
+  box-shadow: 8px 8px 0px #4C70FF;
+  border-radius: 4px;
+  height: 55px;
 }
-
-.login-submit:disabled {
-  opacity: 0.6;
+html .login-submit:hover {
+  background: #FAFAFA;
+  border: 1.6px solid #0033FF;
+  box-shadow: 4px 4px 0px #0033FF;
+  border-radius: 4px;
+  cursor: pointer;
 }
-
-.login-submit:hover {
-  /* border: 1px solid #2f5bb7; */
-  border: 0px;
-  text-shadow: 0 1px rgba(0, 0, 0, 0.3);
-  background-color: #357ae8;
+html .login-submit:disabled {
+  background: #FAFAFA;
+  border: 1.6px solid #9AA2B2;
+  border-radius: 4px;
+  box-shadow: none;
+  color: #9AA2B2;
+  cursor: default;
 }
-
-.login-help {
+html .login-help {
   width: 100%;
   text-align: center;
   font-size: 12px;
 }
-
-/* Checkbox */
-.list {
+html .list {
   list-style-type: none;
   padding: 0;
 }
-
-.list__item {
-  margin: 0 0 .7rem 0;
+html .list__item {
+  margin: 0 0 0.7rem 0;
   padding: 0;
 }
-
-label {
+html label {
   display: -webkit-box;
   display: -webkit-flex;
   display: -ms-flexbox;
@@ -152,10 +175,15 @@ label {
   -ms-flex-align: center;
   align-items: center;
   text-align: left;
+  font-family: "Titillium Web", sans-serif;
 }
-
-input[type=radio],
-input[type=checkbox] {
+html .label-user, html .label-password {
+  padding-bottom: 8px;
+}
+html .input-user {
+  margin-bottom: 40px;
+}
+html input[type=radio] {
   -webkit-box-flex: 0;
   -webkit-flex: none;
   -ms-flex: none;
@@ -163,15 +191,23 @@ input[type=checkbox] {
   margin-right: 10px;
   float: left;
 }
-
-/* Media Query */
+html input[type=checkbox] {
+  -webkit-box-flex: 0;
+  -webkit-flex: none;
+  -ms-flex: none;
+  flex: none;
+  margin-right: 10px;
+  float: left;
+  cursor: pointer;
+}
 @media screen and (max-width: 450px) {
-  .login-card {
+  html .login-card {
     width: 70% !important;
   }
-
-  .login-card img {
+  html .login-card img {
     width: 30%;
     height: 30%;
   }
 }
+
+/*# sourceMappingURL=style.css.map */
