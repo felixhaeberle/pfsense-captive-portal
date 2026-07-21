@@ -1,4 +1,4 @@
-# pfSense Captive Portal — shadcn edition
+# pfSense Captive Portal
 
 Beautiful, secure, self-contained login pages for the [pfSense®](https://www.pfsense.org/) captive portal.
 Styled after [shadcn/ui](https://ui.shadcn.com), built with zero dependencies, compatible with
