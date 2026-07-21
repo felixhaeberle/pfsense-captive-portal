@@ -1,0 +1,65 @@
+{
+  "$comment": "Edit this file, then run `node tools/build.mjs`. The three uploadable pages are regenerated at the repository root.",
+  "brand": {
+    "name": "Acme Hotel",
+    "title": "Guest Wi-Fi",
+    "logo": "src/assets/logo.svg",
+    "logoWide": false,
+    "favicon": true
+  },
+  "theme": {
+    "default": "system",
+    "allowToggle": true,
+    "radius": "0.625rem",
+    "primary": null,
+    "primaryForeground": null,
+    "backgroundImage": "captiveportal-background.jpg",
+    "backgroundBlur": false
+  },
+  "auth": {
+    "methods": [
+      "account",
+      "voucher"
+    ],
+    "defaultMethod": "account",
+    "usernameAutocomplete": "username",
+    "showPasswordToggle": true,
+    "voucherFormat": "XXXX-XXXX-XXXX",
+    "voucherAutoFormat": true,
+    "voucherCount": 1
+  },
+  "terms": {
+    "required": true,
+    "termsUrl": "https://example.com/terms",
+    "privacyUrl": "https://example.com/privacy",
+    "openInNewTab": true
+  },
+  "logout": {
+    "showSessionDetails": true,
+    "showDisconnectButton": true,
+    "autoRedirect": true,
+    "autoRedirectDelay": 3
+  },
+  "i18n": {
+    "enabled": true,
+    "default": "en",
+    "languages": [
+      "en",
+      "de",
+      "fr",
+      "es",
+      "it"
+    ],
+    "detect": true
+  },
+  "security": {
+    "csp": true,
+    "allowExternalLinks": true,
+    "clientSideValidation": true,
+    "warnOnInsecureTransport": true
+  },
+  "footer": {
+    "text": "Need help? Ask at the front desk.",
+    "showPoweredBy": false
+  }
+}

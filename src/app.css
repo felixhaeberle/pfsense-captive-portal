@@ -1,0 +1,1166 @@
+/* ---------------------------------------------------------------------------
+ * Components — hand-translated from the shadcn/ui "new-york-v4" registry source
+ * into dependency-free CSS. Class names mirror the React component names so the
+ * mapping stays obvious: .btn, .input, .card, .checkbox, .alert, .badge, .tabs.
+ * ------------------------------------------------------------------------- */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  border: 0 solid var(--border);
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--foreground);
+  background-color: var(--background);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:focus-visible {
+  outline: 2px solid transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* --- Page shell ---------------------------------------------------------- */
+
+.shell {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 1.5rem 1rem calc(1.5rem + env(safe-area-inset-bottom));
+  isolation: isolate;
+}
+
+/* The backdrop is a separate fixed layer rather than a body background so the
+ * blur/scrim can be tuned without disturbing scroll behaviour on iOS. */
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: -2;
+  background-color: var(--background);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.backdrop::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--scrim);
+}
+
+.no-backdrop .backdrop::after {
+  display: none;
+}
+
+.shell > * {
+  width: 100%;
+  max-width: 26rem;
+}
+
+/* The shell is a size container so the card can respond to the space actually
+ * available rather than to the viewport. That distinction matters here: the
+ * macOS/iOS Captive Network Assistant and Android's "sign in to network" sheet
+ * render the portal in a panel far narrower than the reported viewport, and on
+ * some builds report a desktop-width viewport outright. Sizing off the
+ * container is correct in both the panel and a normal browser tab. */
+.shell {
+  container-type: inline-size;
+  container-name: shell;
+}
+
+/* --- Card ---------------------------------------------------------------- */
+
+.card {
+  container-type: inline-size;
+  container-name: card;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-block: 1.5rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  background-color: var(--card);
+  color: var(--card-foreground);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Raised above a photographic backdrop the flat shadow-sm disappears, so the
+ * backdrop variant gets the larger elevation instead. */
+.has-backdrop .card {
+  box-shadow: var(--shadow-xl);
+}
+
+.card-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding-inline: 1.5rem;
+  text-align: center;
+}
+
+.card-title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+.card-description {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4285714;
+  color: var(--muted-foreground);
+}
+
+.card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding-inline: 1.5rem;
+}
+
+.card-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-inline: 1.5rem;
+}
+
+/* --- Brand --------------------------------------------------------------- */
+
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-logo {
+  display: block;
+  width: 2.75rem;
+  height: 2.75rem;
+  color: var(--primary);
+}
+
+.brand-logo img,
+.brand-logo svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.brand-logo--wide {
+  width: auto;
+  max-width: 11rem;
+  height: 2.5rem;
+}
+
+/* --- Label / field ------------------------------------------------------- */
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.3333333;
+  color: var(--muted-foreground);
+}
+
+.field-error {
+  margin: 0;
+  font-size: 0.75rem;
+  line-height: 1.3333333;
+  color: var(--destructive);
+}
+
+/* --- Input --------------------------------------------------------------- */
+
+.input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  height: 2.25rem;
+  padding: 0.25rem 0.75rem;
+  border: 1px solid var(--input);
+  border-radius: var(--radius-md);
+  background-color: var(--input-bg);
+  color: inherit;
+  font-family: inherit;
+  /* 16px on small screens is deliberate: anything smaller makes iOS Safari zoom
+   * the viewport on focus, which is disorienting inside a captive webview. */
+  font-size: 1rem;
+  line-height: 1.5;
+  box-shadow: var(--shadow-xs);
+  transition: color var(--duration) var(--ease), box-shadow var(--duration) var(--ease),
+    border-color var(--duration) var(--ease), background-color var(--duration) var(--ease);
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+@media (min-width: 48rem) {
+  .input {
+    font-size: 0.875rem;
+  }
+}
+
+.input::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+
+.input:hover:not(:disabled) {
+  background-color: var(--input-hover-bg);
+}
+
+.input:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px var(--ring-halo), var(--shadow-xs);
+}
+
+.input:disabled {
+  pointer-events: none;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.input[aria-invalid="true"] {
+  border-color: var(--destructive);
+}
+
+.input[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 3px var(--destructive-halo), var(--shadow-xs);
+}
+
+.input--mono {
+  font-family: var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.input--mono::placeholder {
+  letter-spacing: 0.08em;
+}
+
+/* Password field with a reveal toggle sitting inside the control. */
+.input-group {
+  position: relative;
+  display: flex;
+}
+
+.input-group .input {
+  padding-inline-end: 2.5rem;
+}
+
+.input-affix {
+  position: absolute;
+  inset-inline-end: 0.125rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: color var(--duration) var(--ease), background-color var(--duration) var(--ease);
+  outline: none;
+}
+
+.input-affix:hover {
+  color: var(--foreground);
+  background-color: var(--accent-hover);
+}
+
+.input-affix:focus-visible {
+  box-shadow: 0 0 0 3px var(--ring-halo);
+}
+
+.input-affix svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+/* --- Button -------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  height: 2.25rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1.4285714;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+.btn:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px var(--ring-halo);
+}
+
+.btn:disabled,
+.btn[aria-disabled="true"] {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.btn svg {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  pointer-events: none;
+}
+
+.btn--block {
+  width: 100%;
+}
+
+.btn--lg {
+  height: 2.5rem;
+  padding-inline: 1.5rem;
+}
+
+.btn--sm {
+  height: 2rem;
+  padding-inline: 0.75rem;
+}
+
+.btn--icon {
+  width: 2.25rem;
+  padding: 0;
+}
+
+.btn--icon.btn--sm {
+  width: 2rem;
+}
+
+.btn-default {
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.btn-default:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.btn-secondary:hover {
+  background-color: var(--secondary-hover);
+}
+
+.btn-outline {
+  border-color: var(--border);
+  background-color: var(--input-bg);
+  color: inherit;
+  box-shadow: var(--shadow-xs);
+}
+
+.btn-outline:hover {
+  background-color: var(--accent-hover);
+  color: var(--accent-foreground);
+}
+
+.btn-ghost {
+  background-color: transparent;
+  color: inherit;
+}
+
+.btn-ghost:hover {
+  background-color: var(--accent-hover);
+  color: var(--accent-foreground);
+}
+
+.btn-destructive {
+  background-color: var(--destructive);
+  color: #fff;
+}
+
+.btn-destructive:hover {
+  background-color: var(--destructive-hover);
+}
+
+.btn-destructive:focus-visible {
+  border-color: var(--destructive);
+  box-shadow: 0 0 0 3px var(--destructive-halo);
+}
+
+/* Submit buttons swap their label for a spinner while the POST is in flight. */
+.btn[data-busy="true"] {
+  pointer-events: none;
+}
+
+.btn[data-busy="true"] .btn-label {
+  visibility: hidden;
+}
+
+.btn-spinner {
+  position: absolute;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+
+.btn[data-busy="true"] {
+  position: relative;
+}
+
+.btn:not([data-busy="true"]) .btn-spinner {
+  display: none;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* --- Checkbox ------------------------------------------------------------ */
+
+.checkbox-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.checkbox {
+  position: relative;
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  margin: 0.1875rem 0 0;
+  border: 1px solid var(--input);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+  transition: box-shadow var(--duration) var(--ease), background-color var(--duration) var(--ease),
+    border-color var(--duration) var(--ease);
+  -webkit-appearance: none;
+  appearance: none;
+  outline: none;
+}
+
+.checkbox:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+/* Check mark drawn with borders so no SVG asset or inline data URI is needed. */
+.checkbox:checked::after {
+  content: "";
+  position: absolute;
+  left: 4.5px;
+  top: 1.5px;
+  width: 4px;
+  height: 8px;
+  border: solid var(--primary-foreground);
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.checkbox:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px var(--ring-halo);
+}
+
+.checkbox[aria-invalid="true"] {
+  border-color: var(--destructive);
+}
+
+.checkbox[aria-invalid="true"]:focus-visible {
+  box-shadow: 0 0 0 3px var(--destructive-halo);
+}
+
+.checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.checkbox-label {
+  font-size: 0.875rem;
+  line-height: 1.4285714;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.checkbox-label a {
+  color: var(--foreground);
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  text-decoration-color: var(--border);
+  transition: text-decoration-color var(--duration) var(--ease);
+}
+
+.checkbox-label a:hover {
+  text-decoration-color: currentColor;
+}
+
+.checkbox-label a:focus-visible {
+  border-radius: 2px;
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* --- Tabs ---------------------------------------------------------------- */
+
+.tabs {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tabs-list {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 2.25rem;
+  padding: 3px;
+  border-radius: var(--radius-lg);
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+}
+
+.tabs-trigger {
+  display: inline-flex;
+  flex: 1 1 0%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  height: calc(100% - 1px);
+  padding: 0.25rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--duration) var(--ease);
+  outline: none;
+}
+
+.tabs-trigger:hover {
+  color: var(--foreground);
+}
+
+.tabs-trigger[aria-selected="true"] {
+  background-color: var(--background);
+  color: var(--foreground);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark .tabs-trigger[aria-selected="true"] {
+  border-color: var(--input);
+  background-color: var(--input-bg);
+}
+
+.tabs-trigger:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px var(--ring-halo);
+}
+
+.tabs-panel[hidden] {
+  display: none;
+}
+
+.tabs-panel {
+  display: none;
+  flex-direction: column;
+  gap: 1rem;
+  outline: none;
+}
+
+.tabs-panels {
+  display: contents;
+}
+
+/* CSS-only tab machinery. Hidden radios placed before the list and panels
+ * carry the state; everything below works identically with JS disabled. The
+ * script layers on top: focus management, ARIA sync, and blanking the fields
+ * of the panel being left (pfSense checks auth_voucher before auth_user, so a
+ * stale voucher would otherwise hijack an account login). */
+.tab-radio {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+#tab-account:checked ~ .tabs-panels [data-tab-panel="account"],
+#tab-account2:checked ~ .tabs-panels [data-tab-panel="account2"],
+#tab-voucher:checked ~ .tabs-panels [data-tab-panel="voucher"],
+#tab-guest:checked ~ .tabs-panels [data-tab-panel="guest"] {
+  display: flex;
+}
+
+#tab-account:checked ~ .tabs-list label[for="tab-account"],
+#tab-account2:checked ~ .tabs-list label[for="tab-account2"],
+#tab-voucher:checked ~ .tabs-list label[for="tab-voucher"],
+#tab-guest:checked ~ .tabs-list label[for="tab-guest"] {
+  background-color: var(--background);
+  color: var(--foreground);
+  box-shadow: var(--shadow-sm);
+}
+
+.dark #tab-account:checked ~ .tabs-list label[for="tab-account"],
+.dark #tab-account2:checked ~ .tabs-list label[for="tab-account2"],
+.dark #tab-voucher:checked ~ .tabs-list label[for="tab-voucher"],
+.dark #tab-guest:checked ~ .tabs-list label[for="tab-guest"] {
+  border-color: var(--input);
+  background-color: var(--input-bg);
+}
+
+.tabs-trigger svg {
+  width: 0.875rem;
+  height: 0.875rem;
+  flex-shrink: 0;
+}
+
+/* --- Alert --------------------------------------------------------------- */
+
+.alert {
+  display: grid;
+  grid-template-columns: 1rem 1fr;
+  column-gap: 0.75rem;
+  row-gap: 0.125rem;
+  align-items: start;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--card);
+  font-size: 0.875rem;
+  line-height: 1.4285714;
+}
+
+.alert > svg {
+  width: 1rem;
+  height: 1rem;
+  transform: translateY(0.125rem);
+  color: currentColor;
+}
+
+.alert-title {
+  grid-column-start: 2;
+  min-height: 1rem;
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: -0.025em;
+}
+
+.alert-description {
+  grid-column-start: 2;
+  margin: 0;
+  color: var(--muted-foreground);
+}
+
+.alert-destructive {
+  color: var(--destructive);
+  border-color: var(--destructive-halo);
+}
+
+.alert-destructive .alert-description {
+  color: var(--destructive);
+  opacity: 0.9;
+}
+
+.alert-success {
+  color: var(--success);
+  border-color: var(--border);
+}
+
+/* --- Badge --------------------------------------------------------------- */
+
+.badge {
+  display: inline-flex;
+  width: fit-content;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.3333333;
+  white-space: nowrap;
+}
+
+.badge svg {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.badge-secondary {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+.badge-outline {
+  border-color: var(--border);
+  color: var(--foreground);
+}
+
+.badge-success {
+  border-color: var(--border);
+  background-color: var(--secondary);
+  color: var(--success);
+}
+
+.badge-dot {
+  width: 0.375rem;
+  height: 0.375rem;
+  border-radius: 9999px;
+  background-color: currentColor;
+}
+
+.badge-dot--pulse {
+  animation: badge-pulse 2s var(--ease) infinite;
+}
+
+@keyframes badge-pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* --- Separator ----------------------------------------------------------- */
+
+.separator {
+  flex-shrink: 0;
+  width: 100%;
+  height: 1px;
+  border: 0;
+  margin: 0;
+  background-color: var(--border);
+}
+
+.separator-labelled {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.75rem;
+  color: var(--muted-foreground);
+}
+
+.separator-labelled::before,
+.separator-labelled::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background-color: var(--border);
+}
+
+/* --- Definition list (session details on the logout page) ---------------- */
+
+.details {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.5rem 1rem;
+  margin: 0;
+  padding: 0.875rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background-color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+.details dt {
+  color: var(--muted-foreground);
+}
+
+.details dd {
+  margin: 0;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  text-align: right;
+  word-break: break-all;
+  color: var(--foreground);
+}
+
+/* --- Page chrome (theme + language controls, footer) --------------------- */
+
+.chrome {
+  position: fixed;
+  top: max(0.75rem, env(safe-area-inset-top));
+  inset-inline-end: 0.75rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  max-width: none;
+  width: auto;
+}
+
+.chrome .btn-ghost {
+  background-color: var(--overlay);
+  border-color: var(--border);
+  box-shadow: var(--shadow-xs);
+}
+
+.select {
+  height: 2.25rem;
+  padding: 0 1.75rem 0 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--overlay);
+  color: inherit;
+  font-family: inherit;
+  font-size: 0.875rem;
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 0.75rem center, right 0.5rem center;
+  background-size: 4px 4px, 4px 4px;
+  background-repeat: no-repeat;
+}
+
+.select:focus-visible {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 3px var(--ring-halo);
+}
+
+.footer {
+  margin-top: 1.25rem;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  text-align: center;
+  color: var(--muted-foreground);
+}
+
+.has-backdrop .footer {
+  color: rgba(255, 255, 255, 0.72);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.footer a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+/* --- Theme toggle icons -------------------------------------------------- */
+
+.theme-icon {
+  display: inline-flex;
+}
+
+.theme-icon svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.theme-icon--dark,
+.dark .theme-icon--light {
+  display: none;
+}
+
+.dark .theme-icon--dark {
+  display: inline-flex;
+}
+
+/* --- Page-specific bits --------------------------------------------------- */
+
+.status-pill {
+  display: flex;
+  justify-content: center;
+}
+
+.footer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.375rem;
+  margin: 0;
+}
+
+/* CLIENT_MAC substitutes to an empty string when MAC filtering is off —
+ * collapse the badge instead of showing an empty pill. */
+.footer-meta .badge:empty {
+  display: none;
+}
+
+.notice-insecure {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  margin: 0;
+  padding: 0.625rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background-color: var(--muted);
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  line-height: 1.4;
+}
+
+.notice-insecure svg {
+  flex-shrink: 0;
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-top: 0.0625rem;
+}
+
+/* The error page renders $PORTAL_MESSAGE$ into this slot; when the backend
+ * sent nothing the paragraph is empty — collapse it. */
+.alert-description:empty {
+  display: none;
+}
+
+/* --- Utilities ----------------------------------------------------------- */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.text-muted {
+  color: var(--muted-foreground);
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* Entrance animation — subtle, and skipped entirely under reduced motion. */
+.card,
+.chrome {
+  animation: rise 320ms var(--ease) both;
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+/* --- Responsive ----------------------------------------------------------
+ *
+ * Two layers, deliberately. The @media rules are the floor: they work in every
+ * browser and are keyed to the viewport. The @container rules refine on top,
+ * keyed to the width the card actually got. Where they overlap the container
+ * rule wins simply by coming later, so a browser without container-query
+ * support degrades to the media-query result rather than to nothing.
+ * ----------------------------------------------------------------------- */
+
+@media (max-width: 26rem) {
+  .card {
+    border-radius: var(--radius-lg);
+  }
+
+  .card-header,
+  .card-content,
+  .card-footer {
+    padding-inline: 1.25rem;
+  }
+}
+
+/* Cramped panel — the CNA sheet, a split-screen window, a 320px phone. */
+@container shell (max-width: 22rem) {
+  .card {
+    border-radius: var(--radius-lg);
+  }
+
+  .card-header,
+  .card-content,
+  .card-footer {
+    padding-inline: 1.125rem;
+  }
+
+  .card {
+    gap: 1.25rem;
+  }
+
+  .card-title {
+    font-size: 1.0625rem;
+  }
+
+  .brand-logo {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
+
+  .chrome {
+    top: max(0.5rem, env(safe-area-inset-top));
+    inset-inline-end: 0.5rem;
+  }
+}
+
+/* Very cramped — stack the session details instead of forcing a two-column
+ * grid that would wrap a MAC address mid-token. */
+@container card (max-width: 17rem) {
+  .details {
+    grid-template-columns: 1fr;
+    gap: 0.25rem 0;
+  }
+
+  .details dd {
+    text-align: left;
+    margin-bottom: 0.375rem;
+  }
+
+  .tabs-list {
+    height: auto;
+    flex-wrap: wrap;
+  }
+
+  .tabs-trigger {
+    flex: 1 0 100%;
+    height: 1.875rem;
+  }
+}
+
+/* Roomy — a normal desktop tab. Let the card breathe rather than looking like
+ * a phone dialog stranded in the middle of a 27" display. */
+@container shell (min-width: 40rem) {
+  .shell > * {
+    max-width: 28rem;
+  }
+
+  .card {
+    gap: 1.75rem;
+    padding-block: 1.75rem;
+  }
+
+  .card-header,
+  .card-content,
+  .card-footer {
+    padding-inline: 1.75rem;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+  }
+
+  .brand-logo {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+/* Short-and-wide, e.g. a phone held sideways: trim vertical rhythm so the
+ * submit button stays above the fold without scrolling. */
+@media (max-height: 34rem) and (orientation: landscape) {
+  .shell {
+    padding-block: 1rem;
+  }
+
+  .card {
+    gap: 1rem;
+    padding-block: 1.25rem;
+  }
+
+  .card,
+  .chrome {
+    animation: none;
+  }
+
+  .brand-logo {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .card-description {
+    display: none;
+  }
+}
