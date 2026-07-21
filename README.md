@@ -24,8 +24,9 @@ Styled after [shadcn/ui](https://ui.shadcn.com), built with zero dependencies, c
 - **Self-contained by construction.** Everything is inlined into three HTML
   files. That's not an optimisation: a pre-authentication client cannot load
   *anything* from the internet, so a CDN reference means a broken page.
-- **27 languages, chosen automatically.** The page adopts the browser/system
-  language on every load (incl. RTL Arabic/Hebrew). No picker, no cookies.
+- **47 languages, chosen automatically.** The page adopts the browser/system
+  language on every load (incl. RTL Arabic, Hebrew, Urdu and Persian). No
+  picker, no cookies.
 - **Dark mode by system.** Follows `prefers-color-scheme` live — including
   while the page is open. No flash of the wrong theme on load.
 - **Hardened.** Hash-based CSP, escaped-and-guarded PHP logout template, safe
@@ -162,7 +163,9 @@ Everything lives in [config.json](config.json); rebuild after any change.
 | `footer.text` | `""` | Optional help line under the card |
 
 Languages: en, de, fr, es, it, pt, nl, pl, cs, sk, hu, ro, bg, hr, el, tr,
-ru, uk, sv, no, da, fi, ja, zh, ko, ar, he. Add or adjust in
+ru, uk, sv, no, da, fi, ja, zh, ko, ar, he, hi, bn, ur, fa, id, ms, th, vi,
+fil, ta, sr, sl, lt, lv, et, is, ca, sq, sw, az. Legacy browser tags are
+mapped (iw→he, in→id, tl→fil, nb/nn→no). Add or adjust in
 [src/i18n.json](src/i18n.json) — missing keys fall back to the default
 language, so partial translations are fine.
 

@@ -89,7 +89,9 @@
   /* The page follows the browser/system language on every load — there is no
    * picker and nothing is persisted. Unmatched languages fall back to the
    * build default; missing keys inside a language fall back the same way. */
-  var LANG_ALIAS = { nb: 'no', nn: 'no' };
+  /* Legacy/variant tags browsers still emit: Norwegian Bokmål/Nynorsk,
+   * Hebrew as "iw", Indonesian as "in", Tagalog vs Filipino. */
+  var LANG_ALIAS = { nb: 'no', nn: 'no', iw: 'he', in: 'id', tl: 'fil' };
   var langs = Object.keys(STRINGS);
   var lang = CFG.defaultLang || langs[0];
 
