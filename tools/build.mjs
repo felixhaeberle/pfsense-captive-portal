@@ -190,8 +190,8 @@ function appScript() {
     strings,
     validate: config.security?.clientSideValidation !== false,
     warnInsecure: config.security?.warnOnInsecureTransport !== false,
-    voucherFormat: config.auth?.voucherFormat || '',
-    voucherAutoFormat: !!config.auth?.voucherAutoFormat,
+    voucherFormat: (config.auth?.voucherFormat || '').trim(),
+    voucherAutoFormat: !!config.auth?.voucherAutoFormat && !!(config.auth?.voucherFormat || '').trim(),
     autoRedirect: config.logout?.autoRedirect !== false,
     autoRedirectDelay: Number(config.logout?.autoRedirectDelay) || 3,
   };
@@ -244,14 +244,18 @@ function chrome() {
   return parts.length ? `<div class="chrome">${parts.join('')}</div>` : '';
 }
 
-function field({ id, name, labelKey, type = 'text', placeholderKey, autocomplete, requiredKey, extraClass = '', hintKey, reveal, inputmode, maxlength, disabled, dataAttr = '' }) {
+function field({ id, name, labelKey, type = 'text', placeholderKey, placeholderLiteral, autocomplete, requiredKey, extraClass = '', hintKey, reveal, inputmode, maxlength, disabled, dataAttr = '' }) {
   const attrs = [
     `class="input${extraClass}"`,
     `id="${esc(id)}"`,
     `name="${esc(name)}"`,
     `type="${esc(type)}"`,
     autocomplete ? `autocomplete="${esc(autocomplete)}"` : `autocomplete="off"`,
-    placeholderKey ? `placeholder="${esc(t(placeholderKey))}" data-i18n-attr="placeholder:${placeholderKey}"` : '',
+    placeholderKey
+      ? `placeholder="${esc(t(placeholderKey))}" data-i18n-attr="placeholder:${placeholderKey}"`
+      : placeholderLiteral
+        ? `placeholder="${esc(placeholderLiteral)}"`
+        : '',
     /* `required` is added at runtime by the script, and only to the inputs of
      * the ACTIVE tab panel. Baking it into the markup would break the no-JS
      * path: a display:none input that is required-and-empty is "invalid but
@@ -316,12 +320,22 @@ function secondaryPanel(disabled) {
 
 function voucherPanel(disabled) {
   /* value="#VOUCHER#" supports pfSense's deep-link form,
-   * /index.php?zone=<zone>&voucher=CODE, which pre-fills the field. */
+   * /index.php?zone=<zone>&voucher=CODE, which pre-fills the field.
+   *
+   * The placeholder is shown only when the operator configured a voucher
+   * format — a made-up "XXXX-XXXX-XXXX" would mislead users, since pfSense's
+   * default voucher codes are dash-less and case-SENSITIVE. For the same
+   * reason auto-formatting (which uppercases) only ever applies alongside an
+   * explicitly configured format. */
+  const fmt = (config.auth?.voucherFormat || '').trim();
+  const autoFormat = !!config.auth?.voucherAutoFormat && !!fmt;
   return field({
     id: 'auth_voucher', name: 'auth_voucher', labelKey: 'label.voucher',
-    placeholderKey: 'placeholder.voucher', extraClass: ' input--mono',
-    requiredKey: 'error.empty.voucher', hintKey: 'hint.voucher',
-    dataAttr: 'data-voucher value="#VOUCHER#" autocapitalize="characters"', disabled,
+    placeholderLiteral: fmt || undefined,
+    extraClass: ' input--mono' + (autoFormat ? ' input--code-format' : ''),
+    requiredKey: 'error.empty.voucher',
+    dataAttr: `data-voucher value="#VOUCHER#" autocapitalize="${autoFormat ? 'characters' : 'off'}" autocorrect="off"`,
+    disabled,
   });
 }
 
@@ -355,6 +369,28 @@ function authSection() {
   const active = methods.includes(config.auth?.defaultMethod) ? config.auth.defaultMethod : methods[0];
 
   if (methods.length === 1) return PANELS[methods[0]].render(false);
+
+  /* Stacked layout: every method is visible at once as its own section with
+   * its own submit button, separated by an "or" divider — no tabs to discover.
+   * All sections live in ONE form; the script blanks the other sections'
+   * fields when a section's button is used, which keeps pfSense's
+   * voucher-before-account dispatch from ever seeing stale input. */
+  if (config.auth?.layout === 'stacked') {
+    return methods
+      .map((m, i) => {
+        const section =
+          `<section class="auth-section" data-method-section="${m}" aria-label="${esc(t(PANELS[m].labelKey))}">` +
+          PANELS[m].render(false) +
+          `<button type="submit" class="btn btn-default btn--block js-submit" name="accept" value="login" data-method="${m}">` +
+          `<span class="btn-label" data-i18n="${PANELS[m].submitKey}">${esc(t(PANELS[m].submitKey))}</span>` +
+          `<span class="btn-spinner" aria-hidden="true"></span>` +
+          `</button>` +
+          `</section>`;
+        const divider = `<div class="separator-labelled" role="separator" aria-hidden="true"><span data-i18n="misc.or">${esc(t('misc.or'))}</span></div>`;
+        return i ? divider + section : section;
+      })
+      .join('');
+  }
 
   /* CSS-only tabs. The radios sit before both the list and the panels so
    * `:checked ~` can reach either. `form="cp-detached"` names no existing form,
@@ -485,6 +521,28 @@ function loginCard({ isError }) {
       `<p class="alert-title" id="form-alert-text"></p>` +
       `</div>`;
 
+  /* In the stacked layout every section carries its own submit button, so the
+   * terms checkbox moves ABOVE the sections (it gates all of them) and the
+   * card-level submit button is dropped. */
+  const stacked = config.auth?.layout === 'stacked' && (config.auth?.methods || []).length > 1;
+
+  const formBody = stacked
+    ? `${alertBlock}
+${termsSection()}
+${authSection()}
+${insecureNotice()}`
+    : `${alertBlock}
+${authSection()}
+${termsSection()}
+${insecureNotice()}`;
+
+  const mainButton = stacked
+    ? ''
+    : `<button type="submit" class="btn btn-default btn--block btn--lg js-submit" id="submit" name="accept" value="login">
+<span class="btn-label" data-i18n="${initialSubmitKey()}">${esc(t(initialSubmitKey()))}</span>
+<span class="btn-spinner" aria-hidden="true"></span>
+</button>`;
+
   return `<div class="card">
 <div class="card-header">
 <div class="brand">${logoMarkup()}</div>
@@ -492,17 +550,11 @@ function loginCard({ isError }) {
 ${config.portal?.subtitle !== false ? `<p class="card-description" data-i18n="portal.subtitle">${esc(t('portal.subtitle'))}</p>` : ''}
 </div>
 <form class="card-content" id="login-form" method="post" action="$PORTAL_ACTION$">
-${alertBlock}
-${authSection()}
-${termsSection()}
-${insecureNotice()}
+${formBody}
 <input type="hidden" name="redirurl" value="$PORTAL_REDIRURL$">
 <input type="hidden" name="zone" value="$PORTAL_ZONE$">
 <input type="hidden" name="accept" value="1">
-<button type="submit" class="btn btn-default btn--block btn--lg" id="submit" name="accept" value="login">
-<span class="btn-label" data-i18n="${initialSubmitKey()}">${esc(t(initialSubmitKey()))}</span>
-<span class="btn-spinner" aria-hidden="true"></span>
-</button>
+${mainButton}
 </form>
 ${clientInfo() ? `<div class="card-footer">${clientInfo()}</div>` : ''}
 </div>`;

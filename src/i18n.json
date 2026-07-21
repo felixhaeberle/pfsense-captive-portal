@@ -48,7 +48,8 @@
     "logout.online": "Online",
     "logout.user": "User",
     "logout.remaining": "Time remaining",
-    "logout.redirect": "Continuing automatically in"
+    "logout.redirect": "Continuing automatically in",
+    "misc.or": "or"
   },
   "de": {
     "dir": "ltr",
@@ -99,7 +100,8 @@
     "logout.online": "Online",
     "logout.user": "Benutzer",
     "logout.remaining": "Verbleibende Zeit",
-    "logout.redirect": "Automatische Weiterleitung in"
+    "logout.redirect": "Automatische Weiterleitung in",
+    "misc.or": "oder"
   },
   "fr": {
     "dir": "ltr",
@@ -150,7 +152,8 @@
     "logout.online": "En ligne",
     "logout.user": "Utilisateur",
     "logout.remaining": "Temps restant",
-    "logout.redirect": "Redirection automatique dans"
+    "logout.redirect": "Redirection automatique dans",
+    "misc.or": "ou"
   },
   "es": {
     "dir": "ltr",
@@ -201,7 +204,8 @@
     "logout.online": "En línea",
     "logout.user": "Usuario",
     "logout.remaining": "Tiempo restante",
-    "logout.redirect": "Continuando automáticamente en"
+    "logout.redirect": "Continuando automáticamente en",
+    "misc.or": "o"
   },
   "it": {
     "dir": "ltr",
@@ -252,6 +256,7 @@
     "logout.online": "Online",
     "logout.user": "Utente",
     "logout.remaining": "Tempo rimanente",
-    "logout.redirect": "Reindirizzamento automatico tra"
+    "logout.redirect": "Reindirizzamento automatico tra",
+    "misc.or": "oppure"
   }
 }

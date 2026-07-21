@@ -280,11 +280,17 @@ body {
 .input--mono {
   font-family: var(--font-mono);
   letter-spacing: 0.08em;
-  text-transform: uppercase;
 }
 
 .input--mono::placeholder {
   letter-spacing: 0.08em;
+}
+
+/* Applied only when an explicit voucher format is configured — pfSense's
+ * default voucher codes are case-sensitive, so the visual uppercase transform
+ * must never suggest that case doesn't matter unless the operator says so. */
+.input--code-format {
+  text-transform: uppercase;
 }
 
 /* Password field with a reveal toggle sitting inside the control. */
@@ -919,6 +925,14 @@ body {
   color: inherit;
   text-decoration: underline;
   text-underline-offset: 3px;
+}
+
+/* --- Stacked auth sections ------------------------------------------------ */
+
+.auth-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 /* --- Theme toggle icons -------------------------------------------------- */

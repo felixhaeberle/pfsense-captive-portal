@@ -21,6 +21,7 @@
     "backgroundBlur": false
   },
   "auth": {
+    "layout": "stacked",
     "methods": [
       "account",
       "voucher"
@@ -28,8 +29,8 @@
     "defaultMethod": "account",
     "usernameAutocomplete": "username",
     "showPasswordToggle": true,
-    "voucherFormat": "XXXX-XXXX-XXXX",
-    "voucherAutoFormat": true,
+    "voucherFormat": "",
+    "voucherAutoFormat": false,
     "voucherCount": 1
   },
   "terms": {

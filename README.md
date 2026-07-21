@@ -114,12 +114,13 @@ Everything lives in [config.json](config.json). Every key, with defaults:
 | `theme.primary` / `primaryForeground` | `null` | Brand colour override (any CSS colour) |
 | `theme.backgroundImage` | `captiveportal-background.jpg` | `null` for a flat `--background` page |
 | `theme.backgroundBlur` | `false` | Blur the photo behind the card |
-| `auth.methods` | `["account","voucher"]` | Any of `account`, `account2` (secondary auth server), `voucher`, `guest` (click-through). One method renders without tabs |
-| `auth.defaultMethod` | `"account"` | Initially active tab |
+| `auth.layout` | `"stacked"` | `stacked` shows every method as its own section with its own submit button, separated by "or"; `tabs` puts them behind a tab switcher |
+| `auth.methods` | `["account","voucher"]` | Any of `account`, `account2` (secondary auth server), `voucher`, `guest` (click-through). One method renders without tabs/sections |
+| `auth.defaultMethod` | `"account"` | Initially active tab (tabs layout only) |
 | `auth.usernameAutocomplete` | `"username"` | e.g. `email` if usernames are emails |
 | `auth.showPasswordToggle` | `true` | Eye icon in the password field |
-| `auth.voucherFormat` | `"XXXX-XXXX-XXXX"` | Drives grouping of the auto-formatter |
-| `auth.voucherAutoFormat` | `true` | Uppercase + hyphenate as the user types |
+| `auth.voucherFormat` | `""` | Set e.g. `"XXXX-XXXX-XXXX"` only if your codes really look like that — it becomes the field's placeholder. Empty = no placeholder (pfSense's default codes are dash-less and case-sensitive) |
+| `auth.voucherAutoFormat` | `false` | Uppercase + group as the user types. Only takes effect alongside a configured `voucherFormat`; leave off for case-sensitive codes |
 | `terms.required` | `true` | Checkbox gate before the submit button |
 | `terms.termsUrl` / `privacyUrl` | example.com | **Must be reachable pre-auth** — add the host to the zone's *Allowed Hostnames*, or host the PDF via File Manager and use a relative path |
 | `terms.openInNewTab` | `true` | |

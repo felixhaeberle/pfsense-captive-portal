@@ -281,6 +281,29 @@
   var form = $('#login-form');
   var alertBox = $('#form-alert');
   var alertText = $('#form-alert-text');
+  var submitButtons = $$('.js-submit');
+
+  /* evt.submitter is missing in older webviews (notably pre-15.4 iOS, which
+   * is exactly what a captive network assistant may run) — track clicks as a
+   * fallback so multi-button forms still know which section is submitting. */
+  var lastSubmitter = null;
+  submitButtons.forEach(function (btn) {
+    on(btn, 'click', function () { lastSubmitter = btn; });
+  });
+
+  /* In the stacked layout, Enter inside a section must submit THAT section —
+   * implicit submission would otherwise always pick the form's first button. */
+  $$('[data-method-section]').forEach(function (section) {
+    var btn = $('.js-submit', section);
+    $$('input', section).forEach(function (input) {
+      on(input, 'keydown', function (evt) {
+        if (evt.key === 'Enter') {
+          evt.preventDefault();
+          if (btn && !btn.disabled) btn.click();
+        }
+      });
+    });
+  });
 
   function showAlert(messageKey) {
     if (!alertBox) return;
@@ -302,9 +325,25 @@
 
     on(form, 'submit', function (evt) {
       var problems = 0;
-      var activePanel = $('.tabs-panel[aria-hidden="false"]') || form;
+      var submitter = evt.submitter || lastSubmitter || $('#submit');
+      var section = submitter && submitter.closest ? submitter.closest('[data-method-section]') : null;
 
-      $$('input[data-required]', activePanel).forEach(function (input) {
+      /* Stacked layout: the untouched sections must not ride along — pfSense
+       * consumes auth_voucher before auth_user, so a filled voucher field
+       * would hijack an account submit. */
+      if (section) {
+        $$('[data-method-section]').forEach(function (other) {
+          if (other === section) return;
+          $$('input', other).forEach(function (input) {
+            input.value = '';
+            clearError(input);
+          });
+        });
+      }
+
+      var scope = section || $('.tabs-panel[aria-hidden="false"]') || form;
+
+      $$('input[data-required]', scope).forEach(function (input) {
         if (input.disabled) return;
         if (!input.value.trim()) {
           fieldError(input, input.getAttribute('data-required'));
@@ -325,15 +364,14 @@
 
       /* Let the native submit proceed — it carries the clicked button's
        * name/value, which pfSense requires. Just reflect the busy state. */
-      var submit = $('#submit');
-      if (submit) {
-        submit.setAttribute('data-busy', 'true');
-        submit.setAttribute('aria-busy', 'true');
+      if (submitter) {
+        submitter.setAttribute('data-busy', 'true');
+        submitter.setAttribute('aria-busy', 'true');
       }
       /* If the POST stalls (portal unreachable), release the button so the
        * user can retry rather than staring at a dead spinner. */
       window.setTimeout(function () {
-        if (submit) { submit.removeAttribute('data-busy'); submit.removeAttribute('aria-busy'); }
+        if (submitter) { submitter.removeAttribute('data-busy'); submitter.removeAttribute('aria-busy'); }
       }, 15000);
     });
 
@@ -346,14 +384,16 @@
     });
   }
 
-  /* The submit button unlocks only once the terms checkbox is ticked. The
-   * button is baked ENABLED into the markup — a no-JS client must be able to
-   * submit, gated by the checkbox's native `required` instead — and script
-   * takes the gate over from here. */
+  /* The submit buttons unlock only once the terms checkbox is ticked. The
+   * buttons are baked ENABLED into the markup — a no-JS client must be able
+   * to submit, gated by the checkbox's native `required` instead — and script
+   * takes the gate over from here. Covers the single tabs button and every
+   * per-section button of the stacked layout alike. */
   var gateBox = $('#terms');
-  var gateBtn = $('#submit');
-  if (gateBox && gateBtn) {
-    var syncGate = function () { gateBtn.disabled = !gateBox.checked; };
+  if (gateBox && submitButtons.length) {
+    var syncGate = function () {
+      submitButtons.forEach(function (btn) { btn.disabled = !gateBox.checked; });
+    };
     on(gateBox, 'change', syncGate);
     syncGate();
   }
