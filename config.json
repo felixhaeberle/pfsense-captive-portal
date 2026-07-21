@@ -40,7 +40,7 @@
     "openInNewTab": true
   },
   "logout": {
-    "showSessionDetails": true,
+    "showSessionDetails": false,
     "showDisconnectButton": true,
     "autoRedirect": true,
     "autoRedirectDelay": 3
