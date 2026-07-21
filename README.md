@@ -162,11 +162,18 @@ Everything lives in [config.json](config.json); rebuild after any change.
 | `security.warnOnInsecureTransport` | `true` | HTTP warning banner |
 | `footer.text` | `""` | Optional help line under the card |
 
-Languages: en, de, fr, es, it, pt, nl, pl, cs, sk, hu, ro, bg, hr, el, tr,
-ru, uk, sv, no, da, fi, ja, zh, ko, ar, he, hi, bn, ur, fa, id, ms, th, vi,
-fil, ta, sr, sl, lt, lv, et, is, ca, sq, sw, az. Legacy browser tags are
-mapped (iw→he, in→id, tl→fil, nb/nn→no). Add or adjust in
-[src/i18n.json](src/i18n.json) — missing keys fall back to the default
+All 47 languages:
+
+🇬🇧 en · 🇩🇪 de · 🇫🇷 fr · 🇪🇸 es · 🇮🇹 it · 🇵🇹 pt · 🇳🇱 nl · 🇵🇱 pl · 🇨🇿 cs ·
+🇸🇰 sk · 🇭🇺 hu · 🇷🇴 ro · 🇧🇬 bg · 🇭🇷 hr · 🇬🇷 el · 🇹🇷 tr · 🇷🇺 ru · 🇺🇦 uk ·
+🇸🇪 sv · 🇳🇴 no · 🇩🇰 da · 🇫🇮 fi · 🇯🇵 ja · 🇨🇳 zh · 🇰🇷 ko · 🇸🇦 ar · 🇮🇱 he ·
+🇮🇳 hi · 🇧🇩 bn · 🇵🇰 ur · 🇮🇷 fa · 🇮🇩 id · 🇲🇾 ms · 🇹🇭 th · 🇻🇳 vi · 🇵🇭 fil ·
+🇮🇳 ta · 🇷🇸 sr · 🇸🇮 sl · 🇱🇹 lt · 🇱🇻 lv · 🇪🇪 et · 🇮🇸 is · 🇦🇩 ca · 🇦🇱 sq ·
+🇰🇪 sw · 🇦🇿 az
+
+Arabic, Hebrew, Urdu and Persian render right-to-left. Legacy browser tags
+are mapped on top (iw→he, in→id, tl→fil, nb/nn→no). Add or adjust languages
+in [src/i18n.json](src/i18n.json) — missing keys fall back to the default
 language, so partial translations are fine.
 
 ## Security
