@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src &#39;self&#39; data:; style-src &#39;sha256-3DI7H4BQSqOkobFD+n0PLKdb/K3VUdxm9jtQuuS/9N0=&#39;; script-src &#39;sha256-g+Ltg/4hoB8BQnlf9QbXuGvbYu4fyobiKOYYxikl2mw=&#39; &#39;sha256-f1ocqGmD5UL3BVqxUWIeglB7s3YsHthXKWJjll2PlgU=&#39;; form-action &#39;self&#39;; base-uri &#39;none&#39;; frame-ancestors &#39;none&#39;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src &#39;self&#39; data:; style-src &#39;sha256-3DI7H4BQSqOkobFD+n0PLKdb/K3VUdxm9jtQuuS/9N0=&#39;; script-src &#39;sha256-g+Ltg/4hoB8BQnlf9QbXuGvbYu4fyobiKOYYxikl2mw=&#39; &#39;sha256-7bcGwP3GqqJz1l7vAe7vnlE4lUbdC+cipzWn+mPEgAo=&#39;; form-action &#39;self&#39;; base-uri &#39;none&#39;; frame-ancestors &#39;none&#39;">
 <title>Guest Wi-Fi — You&#39;re connected</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http%3A//www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2523171717' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M5 12.55a11 11 0 0 1 14 0'/%3E%3Cpath d='M8.5 16.1a6 6 0 0 1 7 0'/%3E%3Cpath d='M12 20h.01'/%3E%3C/svg%3E">
 <style>:root {
@@ -1555,6 +1555,14 @@ $cptpl_redir_ok  = ($cptpl_redirurl !== '' && preg_match('#^https?://#i', $cptpl
         if (alertBox && alertBox.getAttribute('data-static') !== 'true') alertBox.hidden = true;
       }
     });
+  }
+
+  var gateBox = $('#terms');
+  var gateBtn = $('#submit');
+  if (gateBox && gateBtn) {
+    var syncGate = function () { gateBtn.disabled = !gateBox.checked; };
+    on(gateBox, 'change', syncGate);
+    syncGate();
   }
 
   if (CFG.warnInsecure && location.protocol === 'http:') {

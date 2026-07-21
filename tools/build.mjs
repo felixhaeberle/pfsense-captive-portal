@@ -411,7 +411,7 @@ function insecureNotice() {
 }
 
 function clientInfo() {
-  if (!config.logout?.showSessionDetails) return '';
+  if (!config.portal?.showClientInfo) return '';
   /* Both macros are htmlspecialchars()-escaped by pfSense and sit in element
    * text, which is a safe sink. CLIENT_MAC is empty unless MAC filtering is on. */
   return (
@@ -489,7 +489,7 @@ function loginCard({ isError }) {
 <div class="card-header">
 <div class="brand">${logoMarkup()}</div>
 <h1 class="card-title" data-i18n="portal.title">${esc(t('portal.title'))}</h1>
-<p class="card-description" data-i18n="portal.subtitle">${esc(t('portal.subtitle'))}</p>
+${config.portal?.subtitle !== false ? `<p class="card-description" data-i18n="portal.subtitle">${esc(t('portal.subtitle'))}</p>` : ''}
 </div>
 <form class="card-content" id="login-form" method="post" action="$PORTAL_ACTION$">
 ${alertBlock}

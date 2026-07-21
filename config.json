@@ -7,6 +7,10 @@
     "logoWide": false,
     "favicon": true
   },
+  "portal": {
+    "subtitle": false,
+    "showClientInfo": false
+  },
   "theme": {
     "default": "system",
     "allowToggle": true,

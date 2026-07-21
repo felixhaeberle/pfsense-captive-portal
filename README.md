@@ -106,6 +106,8 @@ Everything lives in [config.json](config.json). Every key, with defaults:
 | `brand.logo` | `src/assets/logo.svg` | SVG is inlined (can use `currentColor`); PNG/JPG referenced by filename — upload it via File Manager |
 | `brand.logoWide` | `false` | Wordmark-style logos instead of a square mark |
 | `brand.favicon` | `true` | Inline data-URI favicon |
+| `portal.subtitle` | `false` | Show the card subtitle ("Connect to … Wi-Fi") |
+| `portal.showClientInfo` | `false` | IP/MAC badges under the login card |
 | `theme.default` | `"system"` | `light` \| `dark` \| `system` |
 | `theme.allowToggle` | `true` | Show the dark-mode toggle |
 | `theme.radius` | `"0.625rem"` | shadcn radius token |

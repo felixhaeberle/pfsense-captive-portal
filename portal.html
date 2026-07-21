@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src &#39;self&#39; data:; style-src &#39;sha256-3DI7H4BQSqOkobFD+n0PLKdb/K3VUdxm9jtQuuS/9N0=&#39;; script-src &#39;sha256-g+Ltg/4hoB8BQnlf9QbXuGvbYu4fyobiKOYYxikl2mw=&#39; &#39;sha256-f1ocqGmD5UL3BVqxUWIeglB7s3YsHthXKWJjll2PlgU=&#39;; form-action &#39;self&#39;; base-uri &#39;none&#39;; frame-ancestors &#39;none&#39;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src &#39;self&#39; data:; style-src &#39;sha256-3DI7H4BQSqOkobFD+n0PLKdb/K3VUdxm9jtQuuS/9N0=&#39;; script-src &#39;sha256-g+Ltg/4hoB8BQnlf9QbXuGvbYu4fyobiKOYYxikl2mw=&#39; &#39;sha256-7bcGwP3GqqJz1l7vAe7vnlE4lUbdC+cipzWn+mPEgAo=&#39;; form-action &#39;self&#39;; base-uri &#39;none&#39;; frame-ancestors &#39;none&#39;">
 <title>Guest Wi-Fi — Sign in to the network</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http%3A//www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2523171717' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M5 12.55a11 11 0 0 1 14 0'/%3E%3Cpath d='M8.5 16.1a6 6 0 0 1 7 0'/%3E%3Cpath d='M12 20h.01'/%3E%3C/svg%3E">
 <style>:root {
@@ -1210,7 +1210,7 @@ body {
   <path d="M20 8.2v6.4M20 8.2l-3.1 3.2M20 8.2l3.1 3.2" stroke="var(--logo-mark, #fff)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" opacity=".9"/>
 </svg></span></div>
 <h1 class="card-title" data-i18n="portal.title">Sign in to the network</h1>
-<p class="card-description" data-i18n="portal.subtitle">Connect to Acme Hotel Wi-Fi</p>
+
 </div>
 <form class="card-content" id="login-form" method="post" action="$PORTAL_ACTION$">
 <div class="alert alert-destructive" id="form-alert" role="alert" data-static="false" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><p class="alert-title" id="form-alert-text"></p></div>
@@ -1225,7 +1225,7 @@ body {
 <span class="btn-spinner" aria-hidden="true"></span>
 </button>
 </form>
-<div class="card-footer"><p class="footer-meta"><span class="badge badge-outline mono">$CLIENT_IP$</span><span class="badge badge-outline mono mac-badge">$CLIENT_MAC$</span></p></div>
+
 </div>
 <p class="footer"><span data-i18n="footer.help">Need help? Ask at the front desk.</span></p>
 </main>
@@ -1521,6 +1521,14 @@ body {
         if (alertBox && alertBox.getAttribute('data-static') !== 'true') alertBox.hidden = true;
       }
     });
+  }
+
+  var gateBox = $('#terms');
+  var gateBtn = $('#submit');
+  if (gateBox && gateBtn) {
+    var syncGate = function () { gateBtn.disabled = !gateBox.checked; };
+    on(gateBox, 'change', syncGate);
+    syncGate();
   }
 
   if (CFG.warnInsecure && location.protocol === 'http:') {

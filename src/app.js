@@ -346,6 +346,18 @@
     });
   }
 
+  /* The submit button unlocks only once the terms checkbox is ticked. The
+   * button is baked ENABLED into the markup — a no-JS client must be able to
+   * submit, gated by the checkbox's native `required` instead — and script
+   * takes the gate over from here. */
+  var gateBox = $('#terms');
+  var gateBtn = $('#submit');
+  if (gateBox && gateBtn) {
+    var syncGate = function () { gateBtn.disabled = !gateBox.checked; };
+    on(gateBox, 'change', syncGate);
+    syncGate();
+  }
+
   /* --- Insecure transport notice ----------------------------------------- */
 
   if (CFG.warnInsecure && location.protocol === 'http:') {
