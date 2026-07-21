@@ -144,11 +144,39 @@ function buildCss() {
 
   const bg = config.theme?.backgroundImage;
   if (bg) {
-    css += `\n.backdrop {\n  background-image: url("${encodeURI(bg)}");\n}\n`;
+    css += `\n.backdrop {\n  background-image: url("${backgroundUrl(bg)}");\n}\n`;
     if (config.theme?.backgroundBlur) css += `.backdrop { filter: blur(3px); transform: scale(1.03); }\n`;
   }
 
   return PRETTY ? css : squeeze(css);
+}
+
+/**
+ * The background image is embedded as a data: URI by default so each page
+ * stays a genuine SINGLE file — pfSense's upload mask takes exactly one file
+ * per page, and skipping the separate File Manager step removes the one way
+ * the pages could arrive incomplete. The page-content fields have no size
+ * limit (only File Manager assets do), the CSP already allows `img-src data:`.
+ * Trade-off: pfSense stores pages base64 in config.xml, so backups grow by
+ * the image size per page — set theme.inlineBackgroundImage: false to go back
+ * to referencing a File Manager upload instead.
+ */
+function backgroundUrl(bg) {
+  const inline = config.theme?.inlineBackgroundImage !== false;
+  const file = path.resolve(ROOT, bg);
+  if (!inline || !fs.existsSync(file)) {
+    if (inline) console.warn(`  ! background "${bg}" not found locally — referencing by filename (upload it via File Manager)`);
+    return encodeURI(bg);
+  }
+  const MIME = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.avif': 'image/avif' };
+  const mime = MIME[path.extname(file).toLowerCase()];
+  if (!mime) {
+    console.warn(`  ! background "${bg}": unsupported type for inlining — referencing by filename`);
+    return encodeURI(bg);
+  }
+  const data = fs.readFileSync(file).toString('base64');
+  console.log(`  · background inlined (${(data.length / 1024).toFixed(0)} KB base64)`);
+  return `data:${mime};base64,${data}`;
 }
 
 /** Conservative shrink: drop comments and redundant blank lines, keep the
@@ -299,7 +327,7 @@ function accountPanel(disabled) {
     }) +
     field({
       id: 'auth_pass', name: 'auth_pass', labelKey: 'label.password', type: 'password',
-      placeholderKey: 'placeholder.password', autocomplete: 'current-password',
+      autocomplete: 'current-password',
       requiredKey: 'error.empty.pass', reveal: config.auth?.showPasswordToggle !== false, disabled,
     })
   );
@@ -314,7 +342,7 @@ function secondaryPanel(disabled) {
     }) +
     field({
       id: 'auth_pass2', name: 'auth_pass2', labelKey: 'label.password', type: 'password',
-      placeholderKey: 'placeholder.password', autocomplete: 'current-password',
+      autocomplete: 'current-password',
       requiredKey: 'error.empty.pass', reveal: config.auth?.showPasswordToggle !== false, disabled,
     })
   );

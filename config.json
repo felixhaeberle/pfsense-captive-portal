@@ -18,6 +18,7 @@
     "primary": null,
     "primaryForeground": null,
     "backgroundImage": "captiveportal-background.jpg",
+    "inlineBackgroundImage": true,
     "backgroundBlur": false
   },
   "auth": {

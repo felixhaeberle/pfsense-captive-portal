@@ -63,15 +63,22 @@ countdown that any interaction cancels, and an inline disconnect button:
 
 ## Quick start
 
+**No build step required.** The repository ships the three pages ready to
+upload — `portal.html`, `error.html`, `logout.html` at the root, each a single
+self-contained file (styles, script, icons, even the background photo are
+embedded). Download them, upload them in the pfSense mask, done.
+
+To customise (brand, colours, terms links, languages):
+
 ```sh
 git clone https://github.com/felixhaeberle/pfsense-captive-portal
 cd pfsense-captive-portal
 
-# 1. put your name, logo and terms links into config.json
-# 2. build the three pages (any Node ≥ 18, no npm install)
+# 1. edit config.json
+# 2. regenerate the three pages (any Node ≥ 18, no npm install)
 node tools/build.mjs
 
-# 3. try them against a mock pfSense backend
+# 3. preview against a mock pfSense backend
 node tools/devserver.mjs     # http://localhost:8080 — demo/demo or 1234-5678
 ```
 
@@ -90,9 +97,10 @@ conditionals, login/error/logout round trips, even zone-feature flags
 
    Upload all three — a missing error page falls back to pfSense's stock
    template, not to your portal page.
-3. **File Manager** tab — upload your background image as
-   `captiveportal-background.jpg`. (pfSense prefixes uploads with
-   `captiveportal-` automatically; the asset budget is 1 MB per zone.)
+3. That's it for assets — the background image is embedded in the pages.
+   (Only if you set `theme.inlineBackgroundImage: false` or reference extra
+   images: upload those via the **File Manager** tab, which auto-prefixes
+   filenames with `captiveportal-` and has a 1 MB budget per zone.)
 4. Using the logout page? Enable **Logout popup window** in the zone —
    pfSense only serves the logout page when that option is on. No popup is
    actually opened; the disconnect button works inline.
@@ -128,6 +136,7 @@ Everything lives in [config.json](config.json); rebuild after any change.
 | `theme.radius` | `"0.625rem"` | shadcn radius token |
 | `theme.primary` / `primaryForeground` | `null` | Brand colour override, any CSS colour |
 | `theme.backgroundImage` | `captiveportal-background.jpg` | `null` for a flat page |
+| `theme.inlineBackgroundImage` | `true` | Embed the photo as a data: URI so each page is one uploadable file. Off = reference by filename and upload it via File Manager (smaller config.xml backups, one more step) |
 | `theme.backgroundBlur` | `false` | Blur the photo behind the card |
 | `auth.detect` | `true` | Pick the layout variant from the zone config at request time. Off → bake `auth.methods` |
 | `auth.methods` | `["account","voucher"]` | Only used with `detect: false` |
