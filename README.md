@@ -31,12 +31,14 @@ look like a product while doing it.
   SVG is embedded. Nothing is fetched from a CDN — which matters, because a
   pre-authentication client *can't reach a CDN*.
 - **Dark mode** — follows the OS, with an optional toggle, no white flash.
-- **i18n** — EN/DE/FR/ES/IT included, auto-detected from the browser,
-  switchable at runtime, trivially extensible in `src/i18n.json`.
-- **Auth methods as tabs** — local/RADIUS/LDAP account, secondary auth server
-  (`auth_user2`), vouchers (auto-formatting input, `?voucher=` deep-link
-  prefill, multi-code support), and click-through guest mode. CSS-only tabs:
-  everything works with JavaScript disabled.
+- **i18n** — 27 languages built in (incl. RTL Arabic/Hebrew), adopted
+  automatically from the browser/system language — no picker, no persistence.
+  Extensible in `src/i18n.json`; missing keys fall back to the default language.
+- **Three self-selecting layouts** — the page reads the zone's live settings
+  (it runs as PHP on the firewall) and renders accounts-only, codes-only, or
+  both with a toggle at the top; click-through zones get terms + Continue.
+  The toggle is CSS-only and works with JavaScript disabled; `?voucher=`
+  deep links and multi-code entry are supported.
 - **Container queries** — the card adapts to the space it actually gets, so it
   lays out correctly inside the iOS/macOS Captive Network Assistant and
   Android's sign-in sheet, which lie about the viewport.
@@ -131,8 +133,8 @@ Everything lives in [config.json](config.json). Every key, with defaults:
 | `logout.autoRedirectDelay` | `3` | Seconds |
 | `i18n.enabled` | `true` | Off = single language, no switcher |
 | `i18n.default` | `"en"` | Also the language baked into the markup |
-| `i18n.languages` | `en de fr es it` | Subset/order of `src/i18n.json` |
-| `i18n.detect` | `true` | Match `navigator.languages` |
+| `i18n.languages` | `"all"` | 27 languages built in (en de fr es it pt nl pl cs sk hu ro bg hr el tr ru uk sv no da fi ja zh ko ar+he RTL); or list a subset |
+| `i18n.detect` | `true` | The page adopts the browser/system language on every load — there is no language picker |
 | `security.csp` | `true` | Leave on. Turn off only if you must add your own inline code |
 | `security.clientSideValidation` | `true` | Server still validates either way |
 | `security.warnOnInsecureTransport` | `true` | HTTP warning banner |

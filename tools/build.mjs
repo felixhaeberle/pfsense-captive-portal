@@ -80,12 +80,17 @@ const ICONS = {
 
 /* --- Strings -------------------------------------------------------------- */
 
-const LANGS = (config.i18n?.enabled ? config.i18n.languages : [config.i18n?.default || 'en'])
-  .filter((code) => {
-    if (i18n[code]) return true;
-    console.warn(`  ! unknown language "${code}" — skipped`);
-    return false;
-  });
+const configuredLangs = !config.i18n?.enabled
+  ? [config.i18n?.default || 'en']
+  : config.i18n?.languages === 'all' || !config.i18n?.languages
+    ? Object.keys(i18n)
+    : config.i18n.languages;
+
+const LANGS = configuredLangs.filter((code) => {
+  if (i18n[code]) return true;
+  console.warn(`  ! unknown language "${code}" — skipped`);
+  return false;
+});
 
 const DEFAULT_LANG = LANGS.includes(config.i18n?.default) ? config.i18n.default : LANGS[0];
 
@@ -232,15 +237,8 @@ function chrome() {
         `</button>`
     );
   }
-  if (config.i18n?.enabled && LANGS.length > 1) {
-    const options = LANGS.map(
-      (code) => `<option value="${esc(code)}"${code === DEFAULT_LANG ? ' selected' : ''}>${esc(code.toUpperCase())}</option>`
-    ).join('');
-    parts.push(
-      `<label class="sr-only" for="lang" data-i18n="lang.label">${esc(t('lang.label'))}</label>` +
-        `<select class="select" id="lang" data-lang-select>${options}</select>`
-    );
-  }
+  /* No language picker: the page adopts the browser/system language
+   * automatically (navigator.languages, matched against the built-in set). */
   return parts.length ? `<div class="chrome">${parts.join('')}</div>` : '';
 }
 
@@ -350,100 +348,64 @@ const PANELS = {
   guest: { labelKey: 'tab.guest', submitKey: 'action.continue', icon: ICONS.wifi, render: guestPanel },
 };
 
-/** i18n key for the submit button of the initially active method — the tab
- *  script keeps it in sync from then on via data-submit-key. */
-function initialSubmitKey() {
-  const methods = (config.auth?.methods || ['account']).filter((m) => PANELS[m]);
-  const active = methods.includes(config.auth?.defaultMethod) ? config.auth.defaultMethod : methods[0];
-  return PANELS[active]?.submitKey || 'action.signin';
-}
+/* ---------------------------------------------------------------------------
+ * The login card renders as one of THREE runtime variants, chosen by the PHP
+ * prelude from the zone's live settings (pfSense executes login/error pages
+ * through its PHP interpreter with the config API in scope):
+ *
+ *   1. accounts only  → username/password fields, no switcher
+ *   2. vouchers only  → the code field, no switcher
+ *   3. both           → a toggle at the top (CSS-only radio tabs) + panels
+ *  (+ a click-through fallback: terms + Continue, when neither is enabled)
+ *
+ * Every variant ends with: [terms checkbox] directly above [submit button] —
+ * the checkbox is always the last thing before the button.
+ *
+ * If the config API is unavailable, the guards default to TRUE and the page
+ * degrades to the "both" variant. auth.detect: false skips the PHP entirely
+ * and bakes the "both" toggle (or the single configured method).
+ * ------------------------------------------------------------------------- */
 
-function authSection() {
-  const methods = (config.auth?.methods || ['account']).filter((m) => {
-    if (PANELS[m]) return true;
-    console.warn(`  ! unknown auth method "${m}" — skipped`);
-    return false;
-  });
-  if (!methods.length) throw new Error('config.auth.methods is empty — nothing to render');
+const PHP_COND = {
+  both: '$cptpl_accounts && $cptpl_vouchers',
+  accountsOnly: '$cptpl_accounts && !$cptpl_vouchers',
+  vouchersOnly: '!$cptpl_accounts && $cptpl_vouchers',
+  guest: '$cptpl_guest',
+};
 
-  const active = methods.includes(config.auth?.defaultMethod) ? config.auth.defaultMethod : methods[0];
-
-  if (methods.length === 1) return PANELS[methods[0]].render(false);
-
-  /* Stacked layout: every method is visible at once as its own section with
-   * its own submit button, separated by an "or" divider — no tabs to discover.
-   * All sections live in ONE form; the script blanks the other sections'
-   * fields when a section's button is used, which keeps pfSense's
-   * voucher-before-account dispatch from ever seeing stale input.
-   *
-   * With auth.detect (default on), each section is additionally wrapped in a
-   * PHP conditional. pfSense executes the login/error pages through the PHP
-   * interpreter with the firewall's own config API in scope, so the page can
-   * ask the zone what is actually enabled — accounts render only under
-   * auth_method 'authserver' (or 'radmac' with fallback), the code section
-   * only when the zone has vouchers, and a pure click-through zone gets just
-   * a Continue button. If the config API is ever unavailable, every guard
-   * defaults to TRUE and the page falls back to showing all methods. */
-  if (config.auth?.layout === 'stacked') {
-    const detect = config.auth?.detect !== false;
-
-    const PHP_VARS = {
-      account: '$cptpl_accounts',
-      account2: '$cptpl_accounts2',
-      voucher: '$cptpl_vouchers',
-      guest: '$cptpl_guest',
-    };
-
-    const prelude = `<?php
+const DETECT_PRELUDE = `<?php
 // Show only the sign-in methods this zone actually has enabled (see README).
 global $cpzone;
 $cptpl_z = isset($cpzone) ? strtolower((string)$cpzone) : '';
 $cptpl_cfg = ($cptpl_z !== '' && function_exists('config_get_path') && function_exists('config_path_enabled'));
 $cptpl_auth = $cptpl_cfg ? (string)config_get_path("captiveportal/{$cptpl_z}/auth_method", 'none') : '';
 $cptpl_accounts = !$cptpl_cfg || $cptpl_auth === 'authserver' || ($cptpl_auth === 'radmac' && config_path_enabled("captiveportal/{$cptpl_z}", "radmac_fallback"));
-$cptpl_accounts2 = $cptpl_accounts && (!$cptpl_cfg || (string)config_get_path("captiveportal/{$cptpl_z}/auth_server2", '') !== '');
 $cptpl_vouchers = !$cptpl_cfg || config_path_enabled("voucher/{$cptpl_z}");
 $cptpl_guest = (!$cptpl_accounts && !$cptpl_vouchers);
 ?>
 `;
 
-    const sectionFor = (m) =>
-      `<section class="auth-section" data-method-section="${m}" aria-label="${esc(t(PANELS[m].labelKey))}">` +
-      PANELS[m].render(false) +
-      `<button type="submit" class="btn btn-default btn--block js-submit" name="accept" value="login" data-method="${m}">` +
-      `<span class="btn-label" data-i18n="${PANELS[m].submitKey}">${esc(t(PANELS[m].submitKey))}</span>` +
-      `<span class="btn-spinner" aria-hidden="true"></span>` +
-      `</button>` +
-      `</section>`;
-    const divider = `<div class="separator-labelled" role="separator" aria-hidden="true"><span data-i18n="misc.or">${esc(t('misc.or'))}</span></div>`;
+function detectEnabled() {
+  return config.auth?.detect !== false;
+}
 
-    if (!detect) {
-      return methods.map((m, i) => (i ? divider + sectionFor(m) : sectionFor(m))).join('');
-    }
+function submitButton({ labelKey, id, dynamic }) {
+  return (
+    `<button type="submit" class="btn btn-default btn--block btn--lg js-submit"${id ? ` id="${id}"` : ''} name="accept" value="login">` +
+    `<span class="btn-label"${dynamic ? ' data-submit-label' : ''} data-i18n="${labelKey}">${esc(t(labelKey))}</span>` +
+    `<span class="btn-spinner" aria-hidden="true"></span>` +
+    `</button>`
+  );
+}
 
-    /* Auto-guest: a click-through zone must still be able to submit even when
-     * "guest" wasn't listed in config.auth.methods. */
-    const renderList = methods.includes('guest') ? methods : [...methods, 'guest'];
+/** The both-enabled variant: toggle on top, shared fields below, one button
+ *  whose label follows the active toggle. CSS-only radios; JS adds ARIA,
+ *  focus and blanking of the inactive panel (pfSense checks auth_voucher
+ *  BEFORE auth_user, so the hidden panel must never submit stale input). */
+function toggleVariant() {
+  const methods = ['account', 'voucher'];
+  const active = methods.includes(config.auth?.defaultMethod) ? config.auth.defaultMethod : 'account';
 
-    const parts = [prelude];
-    const prevVars = [];
-    for (const m of renderList) {
-      const cond = PHP_VARS[m];
-      if (prevVars.length) {
-        /* Divider renders only when this section AND at least one section
-         * above it are visible. */
-        parts.push(`<?php if ((${prevVars.join(' || ')}) && ${cond}): ?>${divider}<?php endif; ?>`);
-      }
-      parts.push(`<?php if (${cond}): ?>${sectionFor(m)}<?php endif; ?>`);
-      prevVars.push(cond);
-    }
-    return parts.join('\n');
-  }
-
-  /* CSS-only tabs. The radios sit before both the list and the panels so
-   * `:checked ~` can reach either. `form="cp-detached"` names no existing form,
-   * which leaves the radios without a form owner — they still group by name,
-   * but they are never submitted, so pfSense sees only the auth fields. */
   const radios = methods
     .map((m) => `<input type="radio" name="cp-tab" id="tab-${m}" class="tab-radio" form="cp-detached" data-tab-radio="${m}"${m === active ? ' checked' : ''}>`)
     .join('');
@@ -452,15 +414,44 @@ $cptpl_guest = (!$cptpl_accounts && !$cptpl_vouchers);
     .map((m) => `<label class="tabs-trigger" for="tab-${m}" role="tab" aria-selected="${m === active}" aria-controls="panel-${m}" tabindex="0">${PANELS[m].icon}<span data-i18n="${PANELS[m].labelKey}">${esc(t(PANELS[m].labelKey))}</span></label>`)
     .join('');
 
-  /* All inputs are rendered enabled so a no-JS client can use whichever panel
-   * the CSS tabs reveal; the script disables and blanks inactive panels at
-   * runtime (pfSense evaluates auth_voucher before auth_user, so a filled but
-   * hidden voucher field must never ride along on an account submit). */
   const panels = methods
     .map((m) => `<div class="tabs-panel" id="panel-${m}" data-tab-panel="${m}" data-submit-key="${PANELS[m].submitKey}" role="tabpanel" aria-hidden="${m !== active}">${PANELS[m].render(false)}</div>`)
     .join('');
 
-  return `<div class="tabs">${radios}<div class="tabs-list" role="tablist">${triggers}</div><div class="tabs-panels">${panels}</div></div>`;
+  return {
+    fields: `<div class="tabs">${radios}<div class="tabs-list" role="tablist">${triggers}</div><div class="tabs-panels">${panels}</div></div>`,
+    button: submitButton({ labelKey: PANELS[active].submitKey, id: 'submit', dynamic: true }),
+  };
+}
+
+/** Fields + button for the three variants; checkbox injected between them. */
+function loginVariants() {
+  const terms = termsSection();
+  const wrap = (fields, button) => fields + '\n' + terms + '\n' + button;
+
+  const toggle = toggleVariant();
+  const both = wrap(toggle.fields, toggle.button);
+  const accountsOnly = wrap(accountPanel(false), submitButton({ labelKey: 'action.signin' }));
+  const vouchersOnly = wrap(voucherPanel(false), submitButton({ labelKey: 'action.redeem' }));
+  const guest = wrap(guestPanel(), submitButton({ labelKey: 'action.continue' }));
+
+  if (!detectEnabled()) {
+    const methods = (config.auth?.methods || ['account', 'voucher']).filter((m) => PANELS[m]);
+    if (methods.length === 1) {
+      if (methods[0] === 'voucher') return vouchersOnly;
+      if (methods[0] === 'guest') return guest;
+      return accountsOnly;
+    }
+    return both;
+  }
+
+  return [
+    DETECT_PRELUDE,
+    `<?php if (${PHP_COND.both}): ?>\n${both}\n<?php endif; ?>`,
+    `<?php if (${PHP_COND.accountsOnly}): ?>\n${accountsOnly}\n<?php endif; ?>`,
+    `<?php if (${PHP_COND.vouchersOnly}): ?>\n${vouchersOnly}\n<?php endif; ?>`,
+    `<?php if (${PHP_COND.guest}): ?>\n${guest}\n<?php endif; ?>`,
+  ].join('\n');
 }
 
 function termsSection() {
@@ -569,28 +560,6 @@ function loginCard({ isError }) {
       `<p class="alert-title" id="form-alert-text"></p>` +
       `</div>`;
 
-  /* In the stacked layout every section carries its own submit button, so the
-   * terms checkbox moves ABOVE the sections (it gates all of them) and the
-   * card-level submit button is dropped. */
-  const stacked = config.auth?.layout === 'stacked' && (config.auth?.methods || []).length > 1;
-
-  const formBody = stacked
-    ? `${alertBlock}
-${termsSection()}
-${authSection()}
-${insecureNotice()}`
-    : `${alertBlock}
-${authSection()}
-${termsSection()}
-${insecureNotice()}`;
-
-  const mainButton = stacked
-    ? ''
-    : `<button type="submit" class="btn btn-default btn--block btn--lg js-submit" id="submit" name="accept" value="login">
-<span class="btn-label" data-i18n="${initialSubmitKey()}">${esc(t(initialSubmitKey()))}</span>
-<span class="btn-spinner" aria-hidden="true"></span>
-</button>`;
-
   return `<div class="card">
 <div class="card-header">
 <div class="brand">${logoMarkup()}</div>
@@ -598,11 +567,12 @@ ${insecureNotice()}`;
 ${config.portal?.subtitle !== false ? `<p class="card-description" data-i18n="portal.subtitle">${esc(t('portal.subtitle'))}</p>` : ''}
 </div>
 <form class="card-content" id="login-form" method="post" action="$PORTAL_ACTION$">
-${formBody}
+${alertBlock}
+${insecureNotice()}
+${loginVariants()}
 <input type="hidden" name="redirurl" value="$PORTAL_REDIRURL$">
 <input type="hidden" name="zone" value="$PORTAL_ZONE$">
 <input type="hidden" name="accept" value="1">
-${mainButton}
 </form>
 ${clientInfo() ? `<div class="card-footer">${clientInfo()}</div>` : ''}
 </div>`;
@@ -704,7 +674,7 @@ function audit(name, html) {
    * stray "<?" in those two would be swallowed. The logout page is PHP by
    * design; with auth.detect the login/error pages deliberately carry PHP
    * conditionals too, so the check softens to counting balanced tags. */
-  const phpExpected = name === 'logout.html' || (config.auth?.detect !== false && config.auth?.layout === 'stacked');
+  const phpExpected = name === 'logout.html' || detectEnabled();
   if (!phpExpected && /<\?/.test(html)) {
     problems.push('contains "<?" — the PHP interpreter would consume it');
   }

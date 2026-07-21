@@ -21,7 +21,6 @@
     "backgroundBlur": false
   },
   "auth": {
-    "layout": "stacked",
     "methods": [
       "account",
       "voucher"
@@ -47,15 +46,9 @@
   },
   "i18n": {
     "enabled": true,
-    "default": "en",
-    "languages": [
-      "en",
-      "de",
-      "fr",
-      "es",
-      "it"
-    ],
-    "detect": true
+    "languages": "all",
+    "detect": true,
+    "default": "en"
   },
   "security": {
     "csp": true,
@@ -64,7 +57,7 @@
     "warnOnInsecureTransport": false
   },
   "footer": {
-    "text": "Need help? Ask at the front desk.",
+    "text": "",
     "showPoweredBy": false
   }
 }

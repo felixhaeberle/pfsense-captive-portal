@@ -84,13 +84,14 @@
 
   /* --- Language ---------------------------------------------------------- */
 
-  var LANG_KEY = 'cp-lang';
+  /* The page follows the browser/system language on every load — there is no
+   * picker and nothing is persisted. Unmatched languages fall back to the
+   * build default; missing keys inside a language fall back the same way. */
+  var LANG_ALIAS = { nb: 'no', nn: 'no' };
   var langs = Object.keys(STRINGS);
   var lang = CFG.defaultLang || langs[0];
 
   function pickLanguage() {
-    var saved = store(LANG_KEY);
-    if (saved && STRINGS[saved]) return saved;
     if (!CFG.detectLang) return lang;
     var candidates = (navigator.languages || [navigator.language || '']).slice();
     for (var i = 0; i < candidates.length; i++) {
@@ -98,6 +99,7 @@
       if (STRINGS[tag]) return tag;
       var base = tag.split('-')[0];
       if (STRINGS[base]) return base;
+      if (LANG_ALIAS[base] && STRINGS[LANG_ALIAS[base]]) return LANG_ALIAS[base];
     }
     return lang;
   }
@@ -126,16 +128,10 @@
         if (parts.length === 2) el.setAttribute(parts[0].trim(), translate(parts[1].trim()));
       });
     });
-    var select = $('[data-lang-select]');
-    if (select) select.value = next;
   }
 
   if (langs.length) {
     applyLanguage(pickLanguage());
-    on($('[data-lang-select]'), 'change', function (evt) {
-      store(LANG_KEY, evt.target.value);
-      applyLanguage(evt.target.value);
-    });
   }
 
   /* --- Tabs -------------------------------------------------------------- */
@@ -171,7 +167,7 @@
       if (active) {
         /* The call to action follows the auth method: "Sign in" for accounts,
          * "Redeem voucher", "Continue" for click-through. */
-        var submitLabel = $('#submit .btn-label');
+        var submitLabel = $('[data-submit-label]');
         var key = panel.getAttribute('data-submit-key');
         if (submitLabel && key) {
           submitLabel.setAttribute('data-i18n', key);
@@ -291,20 +287,6 @@
     on(btn, 'click', function () { lastSubmitter = btn; });
   });
 
-  /* In the stacked layout, Enter inside a section must submit THAT section —
-   * implicit submission would otherwise always pick the form's first button. */
-  $$('[data-method-section]').forEach(function (section) {
-    var btn = $('.js-submit', section);
-    $$('input', section).forEach(function (input) {
-      on(input, 'keydown', function (evt) {
-        if (evt.key === 'Enter') {
-          evt.preventDefault();
-          if (btn && !btn.disabled) btn.click();
-        }
-      });
-    });
-  });
-
   function showAlert(messageKey) {
     if (!alertBox) return;
     if (alertText) {
@@ -325,23 +307,13 @@
 
     on(form, 'submit', function (evt) {
       var problems = 0;
-      var submitter = evt.submitter || lastSubmitter || $('#submit');
-      var section = submitter && submitter.closest ? submitter.closest('[data-method-section]') : null;
+      var submitter = evt.submitter || lastSubmitter || submitButtons[0];
 
-      /* Stacked layout: the untouched sections must not ride along — pfSense
-       * consumes auth_voucher before auth_user, so a filled voucher field
-       * would hijack an account submit. */
-      if (section) {
-        $$('[data-method-section]').forEach(function (other) {
-          if (other === section) return;
-          $$('input', other).forEach(function (input) {
-            input.value = '';
-            clearError(input);
-          });
-        });
-      }
-
-      var scope = section || $('.tabs-panel[aria-hidden="false"]') || form;
+      /* Toggle variant: validate only the visible panel. The inactive panel's
+       * inputs are already blanked and disabled by the tab sync (pfSense
+       * consumes auth_voucher before auth_user, so the hidden panel must never
+       * submit stale input). Single-method variants validate the whole form. */
+      var scope = $('.tabs-panel[aria-hidden="false"]') || form;
 
       $$('input[data-required]', scope).forEach(function (input) {
         if (input.disabled) return;
