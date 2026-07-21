@@ -115,6 +115,7 @@ Everything lives in [config.json](config.json). Every key, with defaults:
 | `theme.backgroundImage` | `captiveportal-background.jpg` | `null` for a flat `--background` page |
 | `theme.backgroundBlur` | `false` | Blur the photo behind the card |
 | `auth.layout` | `"stacked"` | `stacked` shows every method as its own section with its own submit button, separated by "or"; `tabs` puts them behind a tab switcher |
+| `auth.detect` | `true` | Stacked layout only: the page asks the zone config at request time (pfSense executes it as PHP) and renders only what's enabled — accounts under *auth_method: authserver* (or RADIUS-MAC with fallback), the code section only when the zone has vouchers, and a bare Continue button for click-through zones. Off or unavailable → all configured methods render |
 | `auth.methods` | `["account","voucher"]` | Any of `account`, `account2` (secondary auth server), `voucher`, `guest` (click-through). One method renders without tabs/sections |
 | `auth.defaultMethod` | `"account"` | Initially active tab (tabs layout only) |
 | `auth.usernameAutocomplete` | `"username"` | e.g. `email` if usernames are emails |

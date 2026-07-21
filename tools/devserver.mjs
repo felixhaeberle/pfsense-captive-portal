@@ -70,8 +70,48 @@ function macros(overrides = {}) {
   };
 }
 
-function render(file, overrides) {
+/**
+ * Minimal PHP-template emulator for the patterns OUR pages emit: strips the
+ * `<?php … ?>` prelude blocks, evaluates `<?php if (EXPR): ?> … <?php endif; ?>`
+ * with boolean variables, and expands `<?= htmlspecialchars($var …) ?>` /
+ * `<?= $var ?>` echo tags. Real pfSense runs the genuine PHP interpreter.
+ */
+function evalPhpTemplate(html, values) {
+  const escapeHtml = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+  const truthy = (expr) => {
+    const cmp = expr.match(/^\$(\w+)\s*(!==|>)\s*(.+)$/);
+    if (cmp) {
+      const value = values[cmp[1]];
+      if (cmp[2] === '>') return Number(value) > Number(cmp[3]);
+      return String(value) !== cmp[3].replace(/['"]/g, '');
+    }
+    // Boolean combinations of variables: ($a || $b) && !$c …
+    const jsExpr = expr.replace(/\$(\w+)/g, (_, name) => JSON.stringify(Boolean(values[name])));
+    if (!/^[\strue false()!&|]+$/.test(jsExpr)) return true;
+    try {
+      return new Function(`return (${jsExpr});`)();
+    } catch {
+      return true;
+    }
+  };
+
+  html = html.replace(/<\?php if \((.*?)\): \?>([\s\S]*?)<\?php endif; \?>/g, (_, cond, body) => (truthy(cond.trim()) ? body : ''));
+  html = html.replace(/<\?=\s*htmlspecialchars\(\$(\w+)[^)]*\)\s*\?>/g, (_, name) => escapeHtml(values[name] ?? ''));
+  html = html.replace(/<\?=\s*\$(\w+)\s*\?>/g, (_, name) => escapeHtml(values[name] ?? ''));
+  html = html.replace(/<\?php\b(?!=)[\s\S]*?\?>\n?/g, '');
+  return html;
+}
+
+function render(file, overrides, phpVars) {
   let html = fs.readFileSync(path.join(ROOT, file), 'utf8');
+  html = evalPhpTemplate(html, {
+    cptpl_accounts: true,
+    cptpl_accounts2: false,
+    cptpl_vouchers: true,
+    cptpl_guest: false,
+    ...phpVars,
+  });
   for (const [token, value] of Object.entries(macros(overrides))) {
     html = html.split(token).join(value);
   }
@@ -99,28 +139,7 @@ function renderLogout(vars = {}) {
   };
   values.cptpl_redir_ok = /^https?:\/\//i.test(values.cptpl_redirurl);
 
-  const escapeHtml = (v) => String(v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
-  let html = fs.readFileSync(path.join(ROOT, 'logout.html'), 'utf8');
-
-  // Prelude block.
-  html = html.replace(/<\?php\n\/\/[\s\S]*?\?>\n/, '');
-
-  // Conditionals — evaluate the tests our template actually uses.
-  const truthy = (expr) => {
-    const m = expr.match(/\$(\w+)\s*(!==|>)\s*(.+)/) || expr.match(/^\$(\w+)$/);
-    if (!m) return true;
-    const value = values[m[1]];
-    if (m[2] === '>') return Number(value) > Number(m[3]);
-    if (m[2] === '!==') return String(value) !== m[3].replace(/['"]/g, '');
-    return Boolean(value);
-  };
-  html = html.replace(/<\?php if \((.*?)\): \?>([\s\S]*?)<\?php endif; \?>/g, (_, cond, body) => (truthy(cond.trim()) ? body : ''));
-
-  // Echo tags.
-  html = html.replace(/<\?=\s*htmlspecialchars\(\$(\w+)[^)]*\)\s*\?>/g, (_, name) => escapeHtml(values[name] ?? ''));
-  html = html.replace(/<\?=\s*\$(\w+)\s*\?>/g, (_, name) => escapeHtml(values[name] ?? ''));
-
-  return html;
+  return evalPhpTemplate(fs.readFileSync(path.join(ROOT, 'logout.html'), 'utf8'), values);
 }
 
 function send(res, status, body, type = 'text/html; charset=utf-8') {
@@ -196,7 +215,18 @@ const server = http.createServer(async (req, res) => {
     if (url.searchParams.has('voucher')) overrides['#VOUCHER#'] = url.searchParams.get('voucher');
     if (url.searchParams.has('redirurl')) overrides.$PORTAL_REDIRURL$ = url.searchParams.get('redirurl');
     if (url.searchParams.has('logout_id')) return send(res, 200, '<!doctype html><meta charset=utf-8><title>Disconnected</title><body style="font:16px system-ui;padding:2rem">Session terminated by the firewall.</body>');
-    return send(res, 200, render(pages[url.pathname], overrides));
+
+    // Zone-feature flags, mirroring what the auth.detect PHP prelude computes
+    // on real pfSense: ?noaccounts and/or ?novouchers simulate zones with the
+    // respective method disabled; both off yields the click-through fallback.
+    const accounts = !url.searchParams.has('noaccounts');
+    const vouchers = !url.searchParams.has('novouchers');
+    const phpVars = {
+      cptpl_accounts: accounts,
+      cptpl_vouchers: vouchers,
+      cptpl_guest: !accounts && !vouchers,
+    };
+    return send(res, 200, render(pages[url.pathname], overrides, phpVars));
   }
 
   // Uploaded assets: pfSense stores them prefixed with `captiveportal-` but the

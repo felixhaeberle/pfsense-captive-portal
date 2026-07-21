@@ -374,22 +374,70 @@ function authSection() {
    * its own submit button, separated by an "or" divider — no tabs to discover.
    * All sections live in ONE form; the script blanks the other sections'
    * fields when a section's button is used, which keeps pfSense's
-   * voucher-before-account dispatch from ever seeing stale input. */
+   * voucher-before-account dispatch from ever seeing stale input.
+   *
+   * With auth.detect (default on), each section is additionally wrapped in a
+   * PHP conditional. pfSense executes the login/error pages through the PHP
+   * interpreter with the firewall's own config API in scope, so the page can
+   * ask the zone what is actually enabled — accounts render only under
+   * auth_method 'authserver' (or 'radmac' with fallback), the code section
+   * only when the zone has vouchers, and a pure click-through zone gets just
+   * a Continue button. If the config API is ever unavailable, every guard
+   * defaults to TRUE and the page falls back to showing all methods. */
   if (config.auth?.layout === 'stacked') {
-    return methods
-      .map((m, i) => {
-        const section =
-          `<section class="auth-section" data-method-section="${m}" aria-label="${esc(t(PANELS[m].labelKey))}">` +
-          PANELS[m].render(false) +
-          `<button type="submit" class="btn btn-default btn--block js-submit" name="accept" value="login" data-method="${m}">` +
-          `<span class="btn-label" data-i18n="${PANELS[m].submitKey}">${esc(t(PANELS[m].submitKey))}</span>` +
-          `<span class="btn-spinner" aria-hidden="true"></span>` +
-          `</button>` +
-          `</section>`;
-        const divider = `<div class="separator-labelled" role="separator" aria-hidden="true"><span data-i18n="misc.or">${esc(t('misc.or'))}</span></div>`;
-        return i ? divider + section : section;
-      })
-      .join('');
+    const detect = config.auth?.detect !== false;
+
+    const PHP_VARS = {
+      account: '$cptpl_accounts',
+      account2: '$cptpl_accounts2',
+      voucher: '$cptpl_vouchers',
+      guest: '$cptpl_guest',
+    };
+
+    const prelude = `<?php
+// Show only the sign-in methods this zone actually has enabled (see README).
+global $cpzone;
+$cptpl_z = isset($cpzone) ? strtolower((string)$cpzone) : '';
+$cptpl_cfg = ($cptpl_z !== '' && function_exists('config_get_path') && function_exists('config_path_enabled'));
+$cptpl_auth = $cptpl_cfg ? (string)config_get_path("captiveportal/{$cptpl_z}/auth_method", 'none') : '';
+$cptpl_accounts = !$cptpl_cfg || $cptpl_auth === 'authserver' || ($cptpl_auth === 'radmac' && config_path_enabled("captiveportal/{$cptpl_z}", "radmac_fallback"));
+$cptpl_accounts2 = $cptpl_accounts && (!$cptpl_cfg || (string)config_get_path("captiveportal/{$cptpl_z}/auth_server2", '') !== '');
+$cptpl_vouchers = !$cptpl_cfg || config_path_enabled("voucher/{$cptpl_z}");
+$cptpl_guest = (!$cptpl_accounts && !$cptpl_vouchers);
+?>
+`;
+
+    const sectionFor = (m) =>
+      `<section class="auth-section" data-method-section="${m}" aria-label="${esc(t(PANELS[m].labelKey))}">` +
+      PANELS[m].render(false) +
+      `<button type="submit" class="btn btn-default btn--block js-submit" name="accept" value="login" data-method="${m}">` +
+      `<span class="btn-label" data-i18n="${PANELS[m].submitKey}">${esc(t(PANELS[m].submitKey))}</span>` +
+      `<span class="btn-spinner" aria-hidden="true"></span>` +
+      `</button>` +
+      `</section>`;
+    const divider = `<div class="separator-labelled" role="separator" aria-hidden="true"><span data-i18n="misc.or">${esc(t('misc.or'))}</span></div>`;
+
+    if (!detect) {
+      return methods.map((m, i) => (i ? divider + sectionFor(m) : sectionFor(m))).join('');
+    }
+
+    /* Auto-guest: a click-through zone must still be able to submit even when
+     * "guest" wasn't listed in config.auth.methods. */
+    const renderList = methods.includes('guest') ? methods : [...methods, 'guest'];
+
+    const parts = [prelude];
+    const prevVars = [];
+    for (const m of renderList) {
+      const cond = PHP_VARS[m];
+      if (prevVars.length) {
+        /* Divider renders only when this section AND at least one section
+         * above it are visible. */
+        parts.push(`<?php if ((${prevVars.join(' || ')}) && ${cond}): ?>${divider}<?php endif; ?>`);
+      }
+      parts.push(`<?php if (${cond}): ?>${sectionFor(m)}<?php endif; ?>`);
+      prevVars.push(cond);
+    }
+    return parts.join('\n');
   }
 
   /* CSS-only tabs. The radios sit before both the list and the panels so
@@ -654,9 +702,16 @@ function audit(name, html) {
 
   /* pfSense runs the login and error pages through the PHP interpreter, so a
    * stray "<?" in those two would be swallowed. The logout page is PHP by
-   * design and is exempt. */
-  if (name !== 'logout.html' && /<\?/.test(html)) {
+   * design; with auth.detect the login/error pages deliberately carry PHP
+   * conditionals too, so the check softens to counting balanced tags. */
+  const phpExpected = name === 'logout.html' || (config.auth?.detect !== false && config.auth?.layout === 'stacked');
+  if (!phpExpected && /<\?/.test(html)) {
     problems.push('contains "<?" — the PHP interpreter would consume it');
+  }
+  if (phpExpected) {
+    const opens = (html.match(/<\?(php|=)/g) || []).length;
+    const closes = (html.match(/\?>/g) || []).length;
+    if (opens !== closes) problems.push(`unbalanced PHP tags (${opens} open, ${closes} close)`);
   }
 
   if (!/name="accept"/.test(html) && name !== 'logout.html') {
