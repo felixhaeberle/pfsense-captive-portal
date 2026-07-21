@@ -294,7 +294,6 @@ function accountPanel(disabled) {
   return (
     field({
       id: 'auth_user', name: 'auth_user', labelKey: 'label.username',
-      placeholderKey: 'placeholder.username',
       autocomplete: config.auth?.usernameAutocomplete || 'username',
       requiredKey: 'error.empty.user', disabled,
     }) +
@@ -310,7 +309,7 @@ function secondaryPanel(disabled) {
   return (
     field({
       id: 'auth_user2', name: 'auth_user2', labelKey: 'label.username',
-      placeholderKey: 'placeholder.username', autocomplete: 'username',
+      autocomplete: 'username',
       requiredKey: 'error.empty.user', disabled,
     }) +
     field({
@@ -350,7 +349,7 @@ const PANELS = {
   account: { labelKey: 'tab.account', submitKey: 'action.signin', icon: ICONS.lock, render: accountPanel },
   account2: { labelKey: 'tab.account2', submitKey: 'action.signin', icon: ICONS.lock, render: secondaryPanel },
   voucher: { labelKey: 'tab.voucher', submitKey: 'action.redeem', icon: ICONS.ticket, render: voucherPanel },
-  guest: { labelKey: 'tab.guest', submitKey: 'action.continue', icon: ICONS.wifi, render: guestPanel },
+  guest: { labelKey: 'tab.guest', submitKey: 'action.signin', icon: ICONS.wifi, render: guestPanel },
 };
 
 /* ---------------------------------------------------------------------------
@@ -438,7 +437,7 @@ function loginVariants() {
   const both = wrap(toggle.fields, toggle.button);
   const accountsOnly = wrap(accountPanel(false), submitButton({ labelKey: 'action.signin' }));
   const vouchersOnly = wrap(voucherPanel(false), submitButton({ labelKey: 'action.redeem' }));
-  const guest = wrap(guestPanel(), submitButton({ labelKey: 'action.continue' }));
+  const guest = wrap(guestPanel(), submitButton({ labelKey: 'action.signin' }));
 
   if (!detectEnabled()) {
     const methods = (config.auth?.methods || ['account', 'voucher']).filter((m) => PANELS[m]);
