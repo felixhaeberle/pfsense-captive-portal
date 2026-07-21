@@ -1,0 +1,99 @@
+/* ---------------------------------------------------------------------------
+ * Design tokens — shadcn/ui, base colour "neutral".
+ *
+ * Values are the ones the shadcn registry serves today
+ * (https://ui.shadcn.com/r/colors/neutral.json).
+ *
+ * To rebrand: change --primary / --primary-foreground, or drop in another
+ * shadcn base colour wholesale. Nothing else needs touching.
+ * ------------------------------------------------------------------------- */
+
+:root {
+  --radius: 0.625rem;
+
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --success: oklch(0.527 0.154 150.069);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+
+  --primary-hover: color-mix(in oklab, var(--primary) 90%, transparent);
+  --secondary-hover: color-mix(in oklab, var(--secondary) 80%, transparent);
+  --accent-hover: color-mix(in oklab, var(--accent) 80%, transparent);
+  --destructive-hover: color-mix(in oklab, var(--destructive) 90%, transparent);
+  --ring-halo: color-mix(in oklab, var(--ring) 50%, transparent);
+  --destructive-halo: color-mix(in oklab, var(--destructive) 20%, transparent);
+  --input-bg: transparent;
+  --input-hover-bg: oklch(0.985 0 0);
+  --overlay: color-mix(in oklab, var(--background) 82%, transparent);
+  --scrim: oklch(0 0 0 / 35%);
+
+  --logo-mark: oklch(0.985 0 0);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+
+  --shadow-xs: 0 1px 2px 0 oklch(0 0 0 / 5%);
+  --shadow-sm: 0 1px 3px 0 oklch(0 0 0 / 10%), 0 1px 2px -1px oklch(0 0 0 / 10%);
+  --shadow-md: 0 4px 6px -1px oklch(0 0 0 / 10%), 0 2px 4px -2px oklch(0 0 0 / 10%);
+  --shadow-lg: 0 10px 15px -3px oklch(0 0 0 / 10%), 0 4px 6px -4px oklch(0 0 0 / 10%);
+  --shadow-xl: 0 20px 25px -5px oklch(0 0 0 / 10%), 0 8px 10px -6px oklch(0 0 0 / 10%);
+
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+  --duration: 150ms;
+
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", "Noto Sans", Arial, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.922 0 0);
+  --primary-foreground: oklch(0.205 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.269 0 0);
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.704 0.191 22.216);
+  --success: oklch(0.792 0.209 151.711);
+
+  /* Translucent by design — a solid border reads wrong over the card/backdrop
+   * stack. This is the single most load-bearing detail of shadcn's dark mode. */
+  --border: oklch(1 0 0 / 10%);
+  --input: oklch(1 0 0 / 15%);
+  --ring: oklch(0.556 0 0);
+
+  --accent-hover: color-mix(in oklab, var(--accent) 50%, transparent);
+  --destructive-halo: color-mix(in oklab, var(--destructive) 40%, transparent);
+  --input-bg: color-mix(in oklab, var(--input) 30%, transparent);
+  --input-hover-bg: color-mix(in oklab, var(--input) 50%, transparent);
+  --scrim: oklch(0 0 0 / 55%);
+
+  --logo-mark: oklch(0.205 0 0);
+}
