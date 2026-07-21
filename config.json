@@ -56,7 +56,7 @@
     "csp": true,
     "allowExternalLinks": true,
     "clientSideValidation": true,
-    "warnOnInsecureTransport": true
+    "warnOnInsecureTransport": false
   },
   "footer": {
     "text": "Need help? Ask at the front desk.",
