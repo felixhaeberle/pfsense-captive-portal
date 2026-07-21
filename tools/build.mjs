@@ -164,15 +164,25 @@ function buildCss() {
 function backgroundUrl(bg) {
   const inline = config.theme?.inlineBackgroundImage !== false;
   const file = path.resolve(ROOT, bg);
+
+  /* Non-inline mode references the File Manager copy. pfSense stores uploads
+   * flat and prefixed with `captiveportal-`, so the URL is always the plain
+   * prefixed basename — regardless of where the source file lives in this
+   * repository. */
+  const uploadedName = () => {
+    const base = path.basename(bg);
+    return encodeURI(/captiveportal-/i.test(base) ? base : `captiveportal-${base}`);
+  };
+
   if (!inline || !fs.existsSync(file)) {
-    if (inline) console.warn(`  ! background "${bg}" not found locally — referencing by filename (upload it via File Manager)`);
-    return encodeURI(bg);
+    if (inline) console.warn(`  ! background "${bg}" not found locally — referencing "${uploadedName()}" (upload it via File Manager)`);
+    return uploadedName();
   }
   const MIME = { '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png', '.webp': 'image/webp', '.avif': 'image/avif' };
   const mime = MIME[path.extname(file).toLowerCase()];
   if (!mime) {
-    console.warn(`  ! background "${bg}": unsupported type for inlining — referencing by filename`);
-    return encodeURI(bg);
+    console.warn(`  ! background "${bg}": unsupported type for inlining — referencing "${uploadedName()}"`);
+    return uploadedName();
   }
   const data = fs.readFileSync(file).toString('base64');
   console.log(`  · background inlined (${(data.length / 1024).toFixed(0)} KB base64)`);

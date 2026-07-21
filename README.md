@@ -54,9 +54,10 @@ deep links pre-fill the code field. If the firewall's config API is ever
 unavailable, the page falls back to showing the toggle variant rather than an
 empty card.
 
-After sign-in, the logout page shows the connection status, session details
-(user, IP, device, remaining time when RADIUS supplies it), an auto-redirect
-countdown that any interaction cancels, and an inline disconnect button:
+After sign-in, the logout page confirms the connection, offers an
+auto-redirect countdown that any interaction cancels, and an inline
+disconnect button. (A session-details block — user, IP, device, remaining
+time — is available via `logout.showSessionDetails` but ships disabled.)
 
 <p align="center">
   <img src="screens/connected.png" alt="Connected page" width="720">
@@ -136,7 +137,7 @@ Everything lives in [config.json](config.json); rebuild after any change.
 | `theme.allowToggle` | `false` | Manual toggle button. Off = strictly follow the system scheme, ignore any stored preference |
 | `theme.radius` | `"0.625rem"` | shadcn radius token |
 | `theme.primary` / `primaryForeground` | `null` | Brand colour override, any CSS colour |
-| `theme.backgroundImage` | `captiveportal-background.jpg` | `null` for a flat page |
+| `theme.backgroundImage` | `src/assets/background.jpg` | `null` for a flat page. With inlining off, the built pages reference the pfSense File Manager name (`captiveportal-<basename>`) automatically |
 | `theme.inlineBackgroundImage` | `true` | Embed the photo as a data: URI so each page is one uploadable file. Off = reference by filename and upload it via File Manager (smaller config.xml backups, one more step) |
 | `theme.backgroundBlur` | `false` | Blur the photo behind the card |
 | `auth.detect` | `true` | Pick the layout variant from the zone config at request time. Off → bake `auth.methods` |
@@ -214,8 +215,8 @@ src/
   tokens.css         shadcn design tokens (light + dark)
   app.css            components: card, input, button, toggle, alert, …
   app.js             progressive enhancement: theme, i18n, validation
-  i18n.json          27 languages
-  assets/logo.svg    placeholder logo — replace it
+  i18n.json          47 languages
+  assets/            logo.svg + background.jpg — replace with your brand
 tools/
   build.mjs          builds + audits the three pages (no dependencies)
   devserver.mjs      mock pfSense backend for local preview

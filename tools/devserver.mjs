@@ -232,7 +232,10 @@ const server = http.createServer(async (req, res) => {
   // Uploaded assets: pfSense stores them prefixed with `captiveportal-` but the
   // pages reference them without the prefix, so resolve both spellings.
   const name = path.basename(url.pathname);
-  for (const candidate of [name, `captiveportal-${name}`]) {
+  /* Requests use pfSense's flat `captiveportal-…` naming; the repo keeps
+   * sources under src/assets/ — resolve both spellings in both places. */
+  const bare = name.replace(/^captiveportal-/i, '');
+  for (const candidate of [name, `captiveportal-${name}`, path.join('src/assets', name), path.join('src/assets', bare)]) {
     const file = path.join(ROOT, candidate);
     if (file.startsWith(ROOT) && fs.existsSync(file) && fs.statSync(file).isFile()) {
       return send(res, 200, fs.readFileSync(file), MIME[path.extname(file)] ?? 'application/octet-stream');
