@@ -111,7 +111,7 @@ Everything lives in [config.json](config.json). Every key, with defaults:
 | `portal.subtitle` | `false` | Show the card subtitle ("Connect to … Wi-Fi") |
 | `portal.showClientInfo` | `false` | IP/MAC badges under the login card |
 | `theme.default` | `"system"` | `light` \| `dark` \| `system` |
-| `theme.allowToggle` | `true` | Show the dark-mode toggle |
+| `theme.allowToggle` | `false` | Manual dark-mode toggle button. Off = the page strictly follows the system scheme (live, no reload) and ignores any stored preference |
 | `theme.radius` | `"0.625rem"` | shadcn radius token |
 | `theme.primary` / `primaryForeground` | `null` | Brand colour override (any CSS colour) |
 | `theme.backgroundImage` | `captiveportal-background.jpg` | `null` for a flat `--background` page |

@@ -65,7 +65,9 @@
     });
   }
 
-  var themePref = store(THEME_KEY) || CFG.theme || 'system';
+  /* Stored preference only matters while a toggle exists to set it — without
+   * one, the page follows the system on every load, full stop. */
+  var themePref = (CFG.themeToggle ? store(THEME_KEY) : null) || CFG.theme || 'system';
   applyTheme(themePref);
 
   if (media && media.addEventListener) {

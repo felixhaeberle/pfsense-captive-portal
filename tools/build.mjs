@@ -185,11 +185,16 @@ function jsonForScript(value) {
 }
 
 /* Runs before first paint so a dark-mode client never sees a white flash. */
-const BOOT_JS = `(function(){try{var p=localStorage.getItem('cp-theme')||${jsonForScript(config.theme?.default || 'system')};var d=p==='dark'||(p!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
+/* Without a toggle there is nothing to persist — the stored value is not even
+ * read, so the page can never get stuck in a stale mode. */
+const BOOT_JS = config.theme?.allowToggle !== false
+  ? `(function(){try{var p=localStorage.getItem('cp-theme')||${jsonForScript(config.theme?.default || 'system')};var d=p==='dark'||(p!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`
+  : `(function(){try{var p=${jsonForScript(config.theme?.default || 'system')};var d=p==='dark'||(p!=='light'&&window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');}catch(e){}})();`;
 
 function appScript() {
   const runtime = {
     theme: config.theme?.default || 'system',
+    themeToggle: config.theme?.allowToggle !== false,
     defaultLang: DEFAULT_LANG,
     detectLang: !!config.i18n?.detect,
     strings,

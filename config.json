@@ -13,7 +13,7 @@
   },
   "theme": {
     "default": "system",
-    "allowToggle": true,
+    "allowToggle": false,
     "radius": "0.625rem",
     "primary": null,
     "primaryForeground": null,
