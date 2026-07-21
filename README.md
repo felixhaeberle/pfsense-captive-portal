@@ -116,10 +116,9 @@ Everything lives in [config.json](config.json). Every key, with defaults:
 | `theme.primary` / `primaryForeground` | `null` | Brand colour override (any CSS colour) |
 | `theme.backgroundImage` | `captiveportal-background.jpg` | `null` for a flat `--background` page |
 | `theme.backgroundBlur` | `false` | Blur the photo behind the card |
-| `auth.layout` | `"stacked"` | `stacked` shows every method as its own section with its own submit button, separated by "or"; `tabs` puts them behind a tab switcher |
-| `auth.detect` | `true` | Stacked layout only: the page asks the zone config at request time (pfSense executes it as PHP) and renders only what's enabled — accounts under *auth_method: authserver* (or RADIUS-MAC with fallback), the code section only when the zone has vouchers, and a bare Continue button for click-through zones. Off or unavailable → all configured methods render |
-| `auth.methods` | `["account","voucher"]` | Any of `account`, `account2` (secondary auth server), `voucher`, `guest` (click-through). One method renders without tabs/sections |
-| `auth.defaultMethod` | `"account"` | Initially active tab (tabs layout only) |
+| `auth.detect` | `true` | The page asks the zone config at request time (pfSense executes it as PHP) and renders one of three variants: **accounts only**, **codes only**, or **both** with a toggle at the top; a click-through zone gets just terms + Continue. Off or unavailable → the "both" toggle renders |
+| `auth.methods` | `["account","voucher"]` | With `detect: false`: which methods to bake — one method renders without the toggle |
+| `auth.defaultMethod` | `"account"` | Initially active side of the toggle |
 | `auth.usernameAutocomplete` | `"username"` | e.g. `email` if usernames are emails |
 | `auth.showPasswordToggle` | `true` | Eye icon in the password field |
 | `auth.voucherFormat` | `""` | Set e.g. `"XXXX-XXXX-XXXX"` only if your codes really look like that — it becomes the field's placeholder. Empty = no placeholder (pfSense's default codes are dash-less and case-sensitive) |
