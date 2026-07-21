@@ -169,6 +169,14 @@
         }
       });
       if (active) {
+        /* The call to action follows the auth method: "Sign in" for accounts,
+         * "Redeem voucher", "Continue" for click-through. */
+        var submitLabel = $('#submit .btn-label');
+        var key = panel.getAttribute('data-submit-key');
+        if (submitLabel && key) {
+          submitLabel.setAttribute('data-i18n', key);
+          submitLabel.textContent = translate(key);
+        }
         var first = $('input:not([type=hidden])', panel);
         if (first && doc.activeElement !== first && tabsTouched) first.focus();
       }

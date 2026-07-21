@@ -7,7 +7,7 @@
 <meta name="theme-color" content="#ffffff">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src &#39;self&#39; data:; style-src &#39;sha256-3DI7H4BQSqOkobFD+n0PLKdb/K3VUdxm9jtQuuS/9N0=&#39;; script-src &#39;sha256-g+Ltg/4hoB8BQnlf9QbXuGvbYu4fyobiKOYYxikl2mw=&#39; &#39;sha256-BthIz05Uzp79EmHXYjUGWTMivqtLuHPqoXbUiw07yQY=&#39;; form-action &#39;self&#39;; base-uri &#39;none&#39;; frame-ancestors &#39;none&#39;">
+<meta http-equiv="Content-Security-Policy" content="default-src &#39;none&#39;; img-src &#39;self&#39; data:; style-src &#39;sha256-3DI7H4BQSqOkobFD+n0PLKdb/K3VUdxm9jtQuuS/9N0=&#39;; script-src &#39;sha256-g+Ltg/4hoB8BQnlf9QbXuGvbYu4fyobiKOYYxikl2mw=&#39; &#39;sha256-Td3/5Nk4aIhC6Tz9yZgMxYnZBy0JrnwO5k1ppuu9crA=&#39;; form-action &#39;self&#39;; base-uri &#39;none&#39;; frame-ancestors &#39;none&#39;">
 <title>Guest Wi-Fi — You&#39;re connected</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http%3A//www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2523171717' stroke-width='2.4' stroke-linecap='round'%3E%3Cpath d='M5 12.55a11 11 0 0 1 14 0'/%3E%3Cpath d='M8.5 16.1a6 6 0 0 1 7 0'/%3E%3Cpath d='M12 20h.01'/%3E%3C/svg%3E">
 <style>:root {
@@ -1399,6 +1399,12 @@ $cptpl_redir_ok  = ($cptpl_redirurl !== '' && preg_match('#^https?://#i', $cptpl
         }
       });
       if (active) {
+        var submitLabel = $('#submit .btn-label');
+        var key = panel.getAttribute('data-submit-key');
+        if (submitLabel && key) {
+          submitLabel.setAttribute('data-i18n', key);
+          submitLabel.textContent = translate(key);
+        }
         var first = $('input:not([type=hidden])', panel);
         if (first && doc.activeElement !== first && tabsTouched) first.focus();
       }

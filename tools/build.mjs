@@ -330,11 +330,19 @@ function guestPanel() {
 }
 
 const PANELS = {
-  account: { labelKey: 'tab.account', icon: ICONS.lock, render: accountPanel },
-  account2: { labelKey: 'tab.account2', icon: ICONS.lock, render: secondaryPanel },
-  voucher: { labelKey: 'tab.voucher', icon: ICONS.ticket, render: voucherPanel },
-  guest: { labelKey: 'tab.guest', icon: ICONS.wifi, render: guestPanel },
+  account: { labelKey: 'tab.account', submitKey: 'action.signin', icon: ICONS.lock, render: accountPanel },
+  account2: { labelKey: 'tab.account2', submitKey: 'action.signin', icon: ICONS.lock, render: secondaryPanel },
+  voucher: { labelKey: 'tab.voucher', submitKey: 'action.redeem', icon: ICONS.ticket, render: voucherPanel },
+  guest: { labelKey: 'tab.guest', submitKey: 'action.continue', icon: ICONS.wifi, render: guestPanel },
 };
+
+/** i18n key for the submit button of the initially active method — the tab
+ *  script keeps it in sync from then on via data-submit-key. */
+function initialSubmitKey() {
+  const methods = (config.auth?.methods || ['account']).filter((m) => PANELS[m]);
+  const active = methods.includes(config.auth?.defaultMethod) ? config.auth.defaultMethod : methods[0];
+  return PANELS[active]?.submitKey || 'action.signin';
+}
 
 function authSection() {
   const methods = (config.auth?.methods || ['account']).filter((m) => {
@@ -365,7 +373,7 @@ function authSection() {
    * runtime (pfSense evaluates auth_voucher before auth_user, so a filled but
    * hidden voucher field must never ride along on an account submit). */
   const panels = methods
-    .map((m) => `<div class="tabs-panel" id="panel-${m}" data-tab-panel="${m}" role="tabpanel" aria-hidden="${m !== active}">${PANELS[m].render(false)}</div>`)
+    .map((m) => `<div class="tabs-panel" id="panel-${m}" data-tab-panel="${m}" data-submit-key="${PANELS[m].submitKey}" role="tabpanel" aria-hidden="${m !== active}">${PANELS[m].render(false)}</div>`)
     .join('');
 
   return `<div class="tabs">${radios}<div class="tabs-list" role="tablist">${triggers}</div><div class="tabs-panels">${panels}</div></div>`;
@@ -492,7 +500,7 @@ ${insecureNotice()}
 <input type="hidden" name="zone" value="$PORTAL_ZONE$">
 <input type="hidden" name="accept" value="1">
 <button type="submit" class="btn btn-default btn--block btn--lg" id="submit" name="accept" value="login">
-<span class="btn-label" data-i18n="action.signin">${esc(t('action.signin'))}</span>
+<span class="btn-label" data-i18n="${initialSubmitKey()}">${esc(t(initialSubmitKey()))}</span>
 <span class="btn-spinner" aria-hidden="true"></span>
 </button>
 </form>
